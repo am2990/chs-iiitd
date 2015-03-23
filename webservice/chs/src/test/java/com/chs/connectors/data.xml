@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report>
+  <DataUnit type="daily">
+  		<concept>Ebola</concept>
+        <gender>Male</gender>
+        <timestamp>2015-03-12</timestamp>
+        <value>3</value>
+   </DataUnit>
+   <DataUnit type="monthly">
+  		<concept>HIV</concept>
+        <gender>Female</gender>
+        <timestamp>03</timestamp>
+        <value>3</value>
+   </DataUnit>
+</Report>
