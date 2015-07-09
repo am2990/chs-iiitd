@@ -12,6 +12,7 @@
         <mapping class="com.chs.entity.ConceptDictionary"/>
         <mapping class="com.chs.entity.DissagregationDictionary"/>
         <mapping class="com.chs.entity.UsersTopic"/>
+        <mapping class="com.chs.entity.PatientRecord"/>
         
     </session-factory>
 </hibernate-configuration>

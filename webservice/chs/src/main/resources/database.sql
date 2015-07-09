@@ -44,3 +44,15 @@ PRIMARY KEY (id),
 FOREIGN KEY (user_id) REFERENCES users(ID),
 FOREIGN KEY (topic_id) REFERENCES topic(T_Id)
 )
+
+CREATE TABLE Patient_Record
+(
+id int NOT NULL AUTO_INCREMENT,
+p_name varchar(255) NOT NULL,
+p_uuid varchar(255) NOT NULL,
+p_age INT NOT NULL,
+p_gender varchar(63) NOT NULL,
+p_cellnumber varchar(15) NOT NULL,
+created_at DATETIME NOT NULL,
+PRIMARY KEY (id)
+)

@@ -1,5 +1,8 @@
 package com.chs.controller;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -14,11 +17,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
+import com.chs.entity.PatientRecord;
 import com.chs.entity.Topic;
 import com.chs.entity.UserEntity;
 import com.chs.entity.UsersTopic;
 import com.chs.service.ConceptService;
 import com.chs.service.DissagregationService;
+import com.chs.service.PatientService;
 import com.chs.service.PublishService;
 import com.chs.service.TopicService;
 import com.chs.service.UserService;
@@ -34,12 +39,19 @@ public class AmqpController {
 	private TopicService topicService;
 	private UsersTopicService usersTopicService;
 	private PublishService publishService;
+	private PatientService patientService;
 	
 	
 	@Autowired(required=true)
     @Qualifier(value="conceptService")
     public void setConceptService(ConceptService cs){
         this.conceptService = cs;
+    }
+	
+	@Autowired(required=true)
+    @Qualifier(value="patientService")
+    public void setPatientService(PatientService pats){
+        this.patientService = pats;
     }
 	
 	@Autowired(required=true)
@@ -91,6 +103,47 @@ public class AmqpController {
     }
         
 
+    @RequestMapping(value = "/api/patient/addRecord", method = RequestMethod.POST)
+    @ResponseStatus(value = HttpStatus.OK) 
+    public void AddPatientRecord(HttpServletRequest request,
+    		@RequestParam(value="username", required=true) String username, 
+            @RequestParam(value="pass", required=true) String password,
+            @RequestParam(value="name", required=true) String name, 
+            @RequestParam(value="uuid", required=true) String uuid,
+            @RequestParam(value="age", required=true) Integer age,
+            @RequestParam(value="gender", required=true) String gender,
+            @RequestParam(value="number", required=true) String cellNumber,
+            @RequestParam(value="created_at", required=true) String createdAt)
+            
+    {
+    	UserEntity user = userManager.isUser(username,password);
+    	if(user != null){
+			System.out.println("Recived Params:username"+username+".Pass"+password);
+
+    		PatientRecord pRecord = new PatientRecord();
+    		pRecord.setpatientName(name);
+    		pRecord.setpatientUUID(uuid);
+    		pRecord.setpatientAge(age);
+    		pRecord.setpatientGender(gender);
+    		pRecord.setpatientCellNumber(cellNumber);
+    		
+    		SimpleDateFormat formatter = new SimpleDateFormat("dd-MMM-yyyy");
+    		try {
+    			 
+    			Date date = formatter.parse(createdAt);
+    			pRecord.setcreatedAt(date);
+    		    	 
+    		} catch (ParseException e) {
+    			e.printStackTrace();
+    		}
+    		
+    		patientService.addNewPatientRecord(pRecord);
+   
+    	}
+
+    }
+    
+    
     /**
      * Returns an XML after authenticating the user through the credentials.
      * The XML contains list of the topics user is subscribed to. 

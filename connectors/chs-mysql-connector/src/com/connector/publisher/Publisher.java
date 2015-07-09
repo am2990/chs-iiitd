@@ -21,7 +21,7 @@ public class Publisher {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("192.168.48.21");
         factory.setPort(5672);
-        factory.setUsername("sahyog");factory.setPassword("sahyog");
+        factory.setUsername("chs");factory.setPassword("chs123");
         Connection connection = factory.newConnection();
         Channel channel = connection.createChannel();
 

@@ -80,6 +80,8 @@
     
     <bean id="publishService" class="com.chs.service.impl.PublishServiceImpl"/>
     
+    <bean id="patientDAO" class="com.chs.dao.impl.PatientDAOImpl"></bean>
+    <bean id="patientService" class="com.chs.service.impl.PatientServiceImpl"></bean>
     
     <tx:annotation-driven transaction-manager="transactionManager"/>
     <bean id="transactionManager"

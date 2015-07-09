@@ -27,7 +27,7 @@ public class SubscriberExchange implements Runnable{
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost("192.168.48.21");
         factory.setPort(5672);
-        factory.setUsername("sahyog");factory.setPassword("sahyog");
+        factory.setUsername("chs");factory.setPassword("chs123");
         
         Connection connection;
         QueueingConsumer consumer = null;;
@@ -40,6 +40,7 @@ public class SubscriberExchange implements Runnable{
 	        boolean durable = true;
 	        String queueName = channel.queueDeclare("aiims", durable, false, false, null).getQueue();
 	
+	        channel.queueBind(queueName, EXCHANGE_NAME, "hw_doc");
 	        for(String severity : subscribe){
 	            channel.queueBind(queueName, EXCHANGE_NAME, severity);
 	        }

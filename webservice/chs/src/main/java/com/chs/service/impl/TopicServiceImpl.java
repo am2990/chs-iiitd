@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 import com.chs.dao.TopicDAO;
 import com.chs.entity.Topic;
-import com.chs.entity.UserEntity;
 import com.chs.service.TopicService;
 
 @Service

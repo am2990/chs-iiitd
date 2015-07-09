@@ -7,7 +7,7 @@ public class MySQLConnector {
 	private String userid = "root";
 	private String password = "hell";
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";  
-    static final String DB_URL = "jdbc:mysql://localhost:3306/openmrs197";
+    static final String DB_URL = "jdbc:mysql://localhost:3306/chs";
 
 	private Connection con;
 	// constructor

@@ -28,7 +28,7 @@ public class JavaConnectorPublish {
 	// HTTP GET request
 	private void sendGet() throws Exception {
  
-		String url = "http://localhost:8080/chs/api/topics/publisher?username=c&pass=9";
+		String url = "http://localhost:8080/chs/api/topics/publisher?username=aiims&pass=aiims";
  
 		URL obj = new URL(url);
 		HttpURLConnection con = (HttpURLConnection) obj.openConnection();

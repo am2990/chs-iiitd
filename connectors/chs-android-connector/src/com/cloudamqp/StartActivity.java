@@ -69,8 +69,8 @@ public class StartActivity extends Activity {
 		  password = Password.getText().toString();
 		  
 		  //TODO get topics from get request
-		  String[] stringUrl = {"http://192.168.48.21:8080/chs/api/topics/publisher?username="+username+"&pass="+password,
-				  				"http://192.168.48.21:8080/chs/api/topics/subscriber?username="+username+"&pass="+password,
+		  String[] stringUrl = {"http://192.168.16.61:8080/chs/api/topics/publisher?username="+username+"&pass="+password,
+				  				"http://192.168.16.61:8080/chs/api/topics/subscriber?username="+username+"&pass="+password,
 		  					   }; 
 		  
 		  ConnectivityManager connMgr = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);

@@ -147,7 +147,7 @@ public class ActivityHome extends Activity implements OnItemSelectedListener {
 	
 	ConnectionFactory factory = new ConnectionFactory();
 	private void setupConnectionFactory() {
-		String uri = "amqp://sahyog:sahyog@192.168.48.21:5672/%2f";
+		String uri = "amqp://chs:chs123@192.168.16.61:5672/%2f";
 		try {
 			factory.setAutomaticRecoveryEnabled(false);	
 			factory.setUri(uri);
