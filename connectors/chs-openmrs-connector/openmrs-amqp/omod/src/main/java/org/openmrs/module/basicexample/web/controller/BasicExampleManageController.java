@@ -13,13 +13,19 @@
  */
 package org.openmrs.module.basicexample.web.controller;
 
+import java.io.IOException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.api.context.Context;
+//import org.openmrs.module.dhisreport.api.utils.Publisher;
+//import org.openmrs.module.dhisreport.api.utils.Subscriber;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 /**
  * The main controller.
@@ -32,5 +38,27 @@ public class  BasicExampleManageController {
 	@RequestMapping(value = "/module/basicexample/manage", method = RequestMethod.GET)
 	public void manage(ModelMap model) {
 		model.addAttribute("user", Context.getAuthenticatedUser());
+	}
+	
+	@RequestMapping(value = "/module/basicexample/profile", method = RequestMethod.GET)
+	public @ResponseBody String processAJAXRequest(
+			@RequestParam("firstname") String firstname,
+			@RequestParam("lastname") String lastname	) {
+		String response = "hello baby";
+		System.out.println("my first name--"+firstname);
+		
+////		Publisher p  = new Publisher("doc_hw", firstname);
+////		String[] subs = {"hw_doc", "malaria"};
+////		Subscriber s  = new Subscriber(subs);
+//		s.start();
+//		try {
+//			p.Publish();
+//		} catch (IOException e) {
+//			System.out.println("Error in publish");
+//			e.printStackTrace();
+//		}
+		// Process the request
+		// Prepare the response string
+		return response;
 	}
 }
