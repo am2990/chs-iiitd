@@ -616,6 +616,14 @@ html .ui-panel-page-container-a {
 	border-style: solid;
 }
 /* Links */
+
+.ui-link {
+    color: #ff0000;
+    font-size: 0;
+	width: 0;
+	height: 0;
+}
+
 .ui-page-theme-a a,
 html .ui-bar-a a,
 html .ui-body-a a,

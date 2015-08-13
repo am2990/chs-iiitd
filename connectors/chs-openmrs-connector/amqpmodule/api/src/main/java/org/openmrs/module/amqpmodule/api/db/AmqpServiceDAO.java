@@ -28,6 +28,7 @@ public interface AmqpServiceDAO {
 	public void addPerson(AmqpModule p);
 	public void updatePerson(AmqpModule p);
 	public List<AmqpModule> listPersons();
+	public List<AmqpModule> listPersonsVisited();
 	public AmqpModule getPersonById(int id);
 	public void removePerson(int id);
 }

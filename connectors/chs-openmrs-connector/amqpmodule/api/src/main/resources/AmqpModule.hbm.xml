@@ -27,6 +27,7 @@
       <property name="Name" column="name" type="string"/>
       <property name="Uuid" column="uuid" type="string"/>
       <property name="Obs" column="obs" type="string"/>
+      <property name="isVisited" column="isvisited" type="int"/>
    </class>
    
 </hibernate-mapping>

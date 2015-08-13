@@ -17,6 +17,7 @@ import static org.junit.Assert.*;
 import org.junit.Test;
 import org.openmrs.api.context.Context;
 import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.module.amqpmodule.utils.Publisher;
 
 /**
  * Tests {@link ${AmqpServiceService}}.
@@ -26,5 +27,6 @@ public class  AmqpServiceTest extends BaseModuleContextSensitiveTest {
 	@Test
 	public void shouldSetupContext() {
 		assertNotNull(Context.getService(AmqpService.class));
+		assertNotNull(Context.getService(Publisher.class));
 	}
 }

@@ -46,8 +46,9 @@ public class HibernateAmqpServiceDAO implements AmqpServiceDAO {
     
     @Override
     public void addPerson(AmqpModule p) {
+    	System.out.println("Saving a new Patient Coming IN from Subscriber");
         Session session = this.sessionFactory.getCurrentSession();
-        session.persist(p);
+        session.save(p);
 //        logger.info("Person saved successfully, Person Details="+p);
     }
  
@@ -62,7 +63,18 @@ public class HibernateAmqpServiceDAO implements AmqpServiceDAO {
     @Override
     public List<AmqpModule> listPersons() {
         Session session = this.sessionFactory.getCurrentSession();
-        List<AmqpModule> personsList = session.createQuery("from AmqpModule").list();
+        List<AmqpModule> personsList = session.createQuery("from AmqpModule where isvisited = 0").list();
+        for(AmqpModule p : personsList){
+            System.out.println("Person List::"+p);
+        }
+        return personsList;
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<AmqpModule> listPersonsVisited() {
+        Session session = this.sessionFactory.getCurrentSession();
+        List<AmqpModule> personsList = session.createQuery("from AmqpModule where isvisited = 1").list();
         for(AmqpModule p : personsList){
             System.out.println("Person List::"+p);
         }

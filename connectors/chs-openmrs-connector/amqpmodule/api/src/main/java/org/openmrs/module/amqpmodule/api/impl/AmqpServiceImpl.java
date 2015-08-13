@@ -58,13 +58,19 @@ public class AmqpServiceImpl extends BaseOpenmrsService implements AmqpService {
     public void updatePerson(AmqpModule p) {
         this.dao.updatePerson(p);
     }
- 
+    
     @Override
     @Transactional
     public List<AmqpModule> listPersons() {
         return this.dao.listPersons();
     }
  
+    @Override
+    @Transactional
+    public List<AmqpModule> listPersonsVisited() {
+        return this.dao.listPersonsVisited();
+    }
+    
     @Override
     @Transactional
     public AmqpModule getPersonById(int id) {

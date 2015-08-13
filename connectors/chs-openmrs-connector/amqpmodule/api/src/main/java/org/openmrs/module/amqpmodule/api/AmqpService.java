@@ -24,7 +24,7 @@ import org.springframework.transaction.annotation.Transactional;
  * <p>
  * It can be accessed only via Context:<br>
  * <code>
- * Context.getService(AmqpServiceService.class).someMethod();
+ * Context.getService(AmqpService.class).someMethod();
  * </code>
  * 
  * @see org.openmrs.api.context.Context
@@ -40,7 +40,9 @@ public interface AmqpService extends OpenmrsService {
 	public void addPerson(AmqpModule p);
     public void updatePerson(AmqpModule p);
     public List<AmqpModule> listPersons();
+    public List<AmqpModule> listPersonsVisited();
     public AmqpModule getPersonById(int id);
     public void removePerson(int id);
+	
 	
 }

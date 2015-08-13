@@ -9,17 +9,20 @@ $(document).ready(function() {
 	$('#sampleForm').submit(
 		function(event) {
 			var obs = $('#obs').val();
+			var pid = $('#pid').val();
 							
 			var data = 'obs='
-					+ encodeURIComponent(obs);
+					+ encodeURIComponent(obs)+' pid='+ encodeURIComponent(pid);
 			$.ajax({
 				url : $("#sampleForm").attr("action"),
 				data :{
                 	"obs" : obs
+                	"pid" : pid
                 },
 				type : "GET",
  
 				success : function(response) {
+					//$(".patientQueue").jsp(data);
 					alert( response );
 				},
 				error : function(xhr, status, error) {
@@ -44,6 +47,7 @@ $(document).ready(function() {
 		<div>
 			<input type="text" name="obs" id="obs">
 		</div>
+		<input type="hidden" name="pid" id="pid" value="${patient.id}"/>
 		<div>
 			<button type="submit" name="submit">Submit</button>
 		</div>

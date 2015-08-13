@@ -21,19 +21,47 @@
 
 	
 	<!-- Services accessible via Context.getService() -->
-	<bean parent="serviceContext">
+	
+		<bean parent="serviceContext">
 		<property name="moduleService">
 			<list>
-				<value>${project.parent.groupId}.${project.parent.artifactId}.api.AmqpService</value>
+				<value>${project.parent.groupId}.${project.parent.artifactId}.utils.Publisher</value>
 				<bean
 					class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 					<property name="transactionManager">
 						<ref bean="transactionManager" />
 					</property>
 					<property name="target">
-						<bean class="${project.parent.groupId}.${project.parent.artifactId}.api.impl.AmqpServiceImpl">
+						<bean class="${project.parent.groupId}.${project.parent.artifactId}.utils.impl.PublisherServiceImpl">
+							<property name="topic" value="111">				</property>
+							<property name="msg" value="hellomsg">				</property>
+						</bean>
+					</property>
+					<property name="preInterceptors">
+						<ref bean="serviceInterceptors" />
+					</property>
+					<property name="transactionAttributeSource">
+						<ref bean="transactionAttributeSource" />
+					</property>
+				</bean>
+			</list>
+		</property>
+	</bean>
+ 	
+	
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list>
+				<value>org.openmrs.module.amqpmodule.api.AmqpService</value>
+				<bean
+					class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+					<property name="transactionManager">
+						<ref bean="transactionManager" />
+					</property>
+					<property name="target">
+						<bean class="org.openmrs.module.amqpmodule.api.impl.AmqpServiceImpl">
 							<property name="dao">
-								<bean class="${project.parent.groupId}.${project.parent.artifactId}.api.db.hibernate.HibernateAmqpServiceDAO">
+								<bean class="org.openmrs.module.amqpmodule.api.db.hibernate.HibernateAmqpServiceDAO">
 									<property name="sessionFactory">
 										<ref bean="sessionFactory" />
 									</property>

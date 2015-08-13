@@ -28,8 +28,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import ca.uhn.hl7v2.util.MessageQuery.Result;
-
 /**
  * The main controller.
  */
@@ -37,18 +35,30 @@ import ca.uhn.hl7v2.util.MessageQuery.Result;
 public class  AmqpModuleManageController {
 	
 	protected final Log log = LogFactory.getLog(getClass());
-	
-	@RequestMapping(value = "/module/amqpmodule/manage", method = RequestMethod.GET)
-	public void manage(ModelMap model) {
+	public static AmqpService amqpService;
+	@RequestMapping(value = "/module/amqpmodule/patientQueue", method = RequestMethod.GET)
+	public void patientQueue(ModelMap model) {
 		
-		AmqpService amqpService = Context.getService(AmqpService.class);
-//		
+		amqpService = Context.getService(AmqpService.class);
+		Subscriber sub = new Subscriber(new String[]{"hw_doc"});
+		sub.start();
 		List<AmqpModule> patients =  amqpService.listPersons();
 //		AmqpModule amqp = new AmqpModule();
 //		amqp.setName("Hello World");
 //		amqp.setUuid("fhdskjgjhfgxvxvadmvdf");
 //		amqp.setObs("Come visit the hospital");
 //		amqpService.addPerson(amqp);
+		model.addAttribute("patients", patients);
+		model.addAttribute("user", Context.getAuthenticatedUser());
+	}
+	
+	@RequestMapping(value = "/module/amqpmodule/patientHistory", method = RequestMethod.GET)
+	public void patientHistory(ModelMap model) {
+		
+		AmqpService amqpService = Context.getService(AmqpService.class);
+//		
+		List<AmqpModule> patients =  amqpService.listPersonsVisited();
+
 		model.addAttribute("patients", patients);
 		model.addAttribute("user", Context.getAuthenticatedUser());
 	}
@@ -68,13 +78,37 @@ public class  AmqpModuleManageController {
 	
 	@RequestMapping(value = "/module/amqpmodule/profile", method = RequestMethod.GET )
 	public @ResponseBody String processAJAXRequest(
-			@RequestParam("obs") String obs) {
+			@RequestParam("obs") String obs,@RequestParam("pid") Integer patient_id) {
+		//String s[]={"amq.direct","amq.fanout"};
+		Publisher p = Context.getService(Publisher.class);
+		AmqpService amqpService = Context.getService(AmqpService.class);		
+		//Publisher p = new Publisher("doc_hw" , obs );
+		p.setTopic("doc_hw");
+		p.setMsg(obs);
 		
-		Publisher p = new Publisher("doc_hw" , obs );
+		try
+		{
+			p.PublisherCreateConnection();
+		}
+		catch(Exception e)
+		{
+		System.out.println("exception in creating connection :");
+		}
 		
-		System.out.println("Doctore Response "+obs);
+		/*Thread t=new Thread(sb);
+		t.start();*/
+		AmqpModule patient = amqpService.getPersonById(patient_id);
+		System.out.println("\npatient name1: "+patient.getName());
+		//Sting str=patient.getObs();
+		patient.setObs(patient.getObs()+" "+obs);
+		amqpService.updatePerson(patient);
+		System.out.println("\npatient name2: "+patient.getName());
 		String response = "sent";
 		return response;
+		
+	   // return "redirect:" + "yahoo.com";
+		//return "patientQueue.form";
+
 	}
 
 }

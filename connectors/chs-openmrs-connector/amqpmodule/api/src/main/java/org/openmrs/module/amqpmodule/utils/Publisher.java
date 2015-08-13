@@ -2,12 +2,31 @@ package org.openmrs.module.amqpmodule.utils;
 
 import java.util.concurrent.TimeoutException;
 
+
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
 
+import org.openmrs.api.OpenmrsService;
+import org.springframework.transaction.annotation.Transactional;
 
+@Transactional
+public interface Publisher extends OpenmrsService
+{
+	public final String EXCHANGE_NAME = "chs";
+
+   
+    public void setMsg(String id);
+	public String getMsg();
+
+	public void setTopic(String message);
+	public String getTopic();
+
+
+	 public boolean PublisherCreateConnection() throws java.io.IOException;
+}
+/*
 public class Publisher
 {
 
@@ -56,4 +75,4 @@ public class Publisher
         return true;
     }
 
-}
+}*/

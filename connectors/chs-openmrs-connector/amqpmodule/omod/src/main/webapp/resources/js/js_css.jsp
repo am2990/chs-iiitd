@@ -19,10 +19,13 @@
 
 <script type="text/javascript">
 	$ = jQuery.noConflict();
+	
+
+	
 </script>
 
 
-<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/jquery/css/jquery.mobile-1.4.5.css" />
+<!--  <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/jquery/css/jquery.mobile-1.4.5.css" />-->
 <script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/common-utils.js" ></script>
 <script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/paging.js" ></script>
 <script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/page-utils.js" ></script>

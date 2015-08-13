@@ -29,12 +29,14 @@ public class AmqpModule extends BaseOpenmrsObject implements Serializable {
 	private String Name; 
 	private String Uuid;   
 	private String Obs;  
+	private Integer isVisited;
 
 	public AmqpModule() {}
-	public AmqpModule(String name, String uuid, String obs) {
+	public AmqpModule(String name, String uuid, String obs, Integer isVisited) {
 		this.Name = name;
 		this.Uuid = uuid;
 		this.Obs = obs;
+		this.isVisited=isVisited;
 	}
 	
 	@Override
@@ -64,6 +66,12 @@ public class AmqpModule extends BaseOpenmrsObject implements Serializable {
 	}
 	public void setObs( String obs ) {
 		this.Obs = obs;
+	}
+	public Integer getIsVisited() {
+		return isVisited;
+	}
+	public void setIsVisited( Integer isVisited ) {
+		this.isVisited = isVisited;
 	}
 	
 
