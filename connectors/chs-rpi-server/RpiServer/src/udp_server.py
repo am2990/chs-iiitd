@@ -1,6 +1,6 @@
 import socket
 import sys
-#import pulseoxy
+import pulseoxy
 #import fcntl
 import struct
 
@@ -58,9 +58,9 @@ while True:
                                 recv_sock.close()
 
                 elif "request" in data:
-			#readings=pulseoxy.readsensor(10)
+            #readings=pulseoxy.readsensor(10)
                         readings = [[78,32],[32,22],[44,34],[11,54]]
-			server_address = (address[0], 10002)
+                        server_address = (address[0], 10002)
                         message = """{type:request_reply, sdr: 192.168.48.21, rcv: 192.168.48.21, time: 1222 , argv: [ {"sensorid": 1, "readings":""" + str(readings)+ """ }] }"""
 
                         try:
