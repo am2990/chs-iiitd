@@ -46,7 +46,7 @@ while True:
 
                 if "discover" in data :
                         server_address = (address[0], 10001)
-                        message = """{ type: "discover_reply", name:"rpi_board" , sdr:"192.168.48.21"  , rcv:"192.168.17.72" , mac:"11:22:33:44:55:66", time:1234 , argv:[{sensorid:1,sensorname:nonin,sensortype:medical}, {sensorid:2,sensorname:temp,sensortype:medical}]}"""
+                        message = """{ type: "discover_reply", name:"rpi_board" , sdr:"""+str(ip)+"""  , rcv:"192.168.17.72" , mac:"11:22:33:44:55:66", time:1234 , argv:[{sensorid:1,sensorname:nonin,sensortype:medical}, {sensorid:2,sensorname:temp,sensortype:medical}]}"""
 
                         try:
                                 # Send data
