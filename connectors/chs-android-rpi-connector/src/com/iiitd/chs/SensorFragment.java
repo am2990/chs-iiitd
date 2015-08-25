@@ -7,12 +7,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.iiitd.navigationexample.R;
 import com.iiitd.networking.NetworkDevice;
@@ -94,9 +99,51 @@ public class SensorFragment extends Fragment {
 
 		});
 		
+//		listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener(){
+//		    public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,long arg3) {
+//		    	final NetworkDevice item = (NetworkDevice) arg0.getItemAtPosition(arg2);
+//		        // adapter.notifyDataSetChanged();
+//		        //adapter.notifyDataSetInvalidated();
+//		        return true;
+//		    }
+//		});
 
+		registerForContextMenu(listView);
+		
 		return rootView;
 	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+	                                ContextMenuInfo menuInfo) {
+	    super.onCreateContextMenu(menu, v, menuInfo);
+	    //TODO Use Menu Inflater
+	    menu.setHeaderTitle("Select The Action");    
+        menu.add(0, v.getId(), 0, "Edit");//groupId, itemId, order, title   
+        menu.add(0, v.getId(), 0, "Delete");  
+	}
+	
+	@Override    
+	public boolean onContextItemSelected(MenuItem item){
+		//TODO implement Edit a Network Device
+		if(item.getTitle()=="Edit"){  
+			Toast.makeText(mContext,"Edit",Toast.LENGTH_LONG).show();  
+		}    
+		else if(item.getTitle()=="Delete"){			
+			AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
+		    int index = info.position;
+			
+			
+			DatabaseHelper db = new DatabaseHelper(mContext);
+			db.removeConnectedDevice(adapter.getItem(index));
+			adapter.remove(adapter.getItem(index));
+			Toast.makeText(mContext,"Deleted",Toast.LENGTH_LONG).show();
+			
+		}else{  
+			return false;  
+		}    
+		return true;    
+	} 
 
 	@Override
 	public void onAttach(Activity activity) {

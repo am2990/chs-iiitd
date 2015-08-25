@@ -98,12 +98,14 @@ public class SensorActivity extends ListActivity{
     public void onListItemClick(ListView l, View v, int position, long id) {
 
 		final NetworkDevice item = (NetworkDevice) l.getItemAtPosition(position);
+		//Why has the item been removed ?
 		deviceList.remove(item);
 		Intent i = new Intent(this, AddDeviceActivity.class);
 		i.putExtra("device", item);
 		startActivity(i);
 		System.out.println("Item Selected from List-"+item +"(and has patient id"+item.getMacAddress());
     }
+	
 	
 	public void startDiscovery(View v){
 		

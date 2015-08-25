@@ -175,6 +175,16 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return 0L;
     }
     
+    public long removeConnectedDevice(NetworkDevice device) {
+        SQLiteDatabase db = this.getWritableDatabase();
+     
+        String whereClause = KEY_MACADDRESS +"= ? "; 
+        String[] whereArgs = {  device.getMacAddress() };  
+        
+        return db.delete(TABLE_NETWORK_DEVICES, whereClause, whereArgs);
+        
+    }
+    
     public List<NetworkDevice> getAllConnectedDevices() {
         List<NetworkDevice> devices = new ArrayList<NetworkDevice>();
  

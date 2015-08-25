@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
@@ -19,7 +20,6 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.StrictMode;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -36,6 +36,8 @@ import com.androidplot.xy.XLayoutStyle;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.YLayoutStyle;
 import com.iiitd.navigationexample.R;
+import com.iiitd.networking.NetworkDevice;
+import com.iiitd.sqlite.helper.DatabaseHelper;
 import com.iiitd.sqlite.helper.Pair;
 
 public class PulseOxApplication extends BaseActivity {
@@ -372,15 +374,21 @@ public class PulseOxApplication extends BaseActivity {
 	    		 int server_port = 10000;
 	    		 DatagramSocket send = new DatagramSocket();
 	    		 
-	    		 InetAddress local = InetAddress.getByName("192.168.43.123");
-	    		 int msg_length=messageStr.length();
-	    		 byte[] message = messageStr.getBytes();
-	    		 DatagramPacket p = new DatagramPacket(message, msg_length,local,server_port);
-	    		 for(int i =0;i<10;i++){
-	    			 send.send(p);
+	    		 DatabaseHelper db = new DatabaseHelper(mContext);
+	    		 List<NetworkDevice> device_list = db.getAllConnectedDevices();
+//	    		 InetAddress local = InetAddress.getByName("192.168.43.123");
+	    		 
+	    		 for(NetworkDevice d: device_list){
+	    			 InetAddress local = InetAddress.getByName(d.getIpAddress());
+		    		 int msg_length=messageStr.length();
+		    		 byte[] message = messageStr.getBytes();
+		    		 DatagramPacket p = new DatagramPacket(message, msg_length,local,server_port);
+		    		 for(int i =0;i<10;i++){
+		    			 send.send(p);
+		    		 }
+		    		 Log.d(TAG, "sending request");
+		    		 send.close();
 	    		 }
-	    		 Log.d(TAG, "sending request");
-	    		 send.close();
 	    	 }catch(Exception e){
 	    		 e.printStackTrace();
 	    	 }
