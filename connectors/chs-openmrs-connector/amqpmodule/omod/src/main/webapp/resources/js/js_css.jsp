@@ -33,7 +33,7 @@
 <script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/jquery/jquery.monthpicker.js" ></script>
 <script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/jquery/jquery.validate.min.js" ></script>
 <script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/jquery-1.11.3.min.js" ></script>
-<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/jquery.mobile-1.4.5.min.js" ></script>
+<%-- <script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/jquery.mobile-1.4.5.min.js" ></script> --%>
 
 
 

@@ -19,7 +19,8 @@ public class Subscriber
 {
 
     private Thread t;
-
+    private static boolean connected = false;
+    
     private final String EXCHANGE_NAME = "chs";
 
     private String[] subscribe;
@@ -47,7 +48,7 @@ public class Subscriber
             connection = factory.newConnection();
             Channel channel = connection.createChannel();
 
-            channel.exchangeDeclare( EXCHANGE_NAME, "direct" );
+            channel.exchangeDeclare( EXCHANGE_NAME, "direct", true );
             // Queue made durable so that it receives message even during mode
             // is not running
             boolean durable = true;
@@ -63,6 +64,7 @@ public class Subscriber
 
             consumer = new QueueingConsumer( channel );
             channel.basicConsume( queueName, true, consumer );
+            connected = true;
         }
         catch ( IOException e )
         {
@@ -75,7 +77,7 @@ public class Subscriber
             e.printStackTrace();
         }
 
-        while ( true )
+        while ( connected )
         {
             QueueingConsumer.Delivery delivery;
             try
@@ -109,8 +111,10 @@ public class Subscriber
             }
             catch ( Exception e )
             {
-                // TODO Auto-generated catch block
+                connected = false;
                 e.printStackTrace();
+                //TODO show notification in OpenMRS to user
+                System.out.println("The Module is no longer connected to RabbitMQ");
             }
         }
     }

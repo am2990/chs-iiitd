@@ -68,7 +68,7 @@ public class PublisherServiceImpl extends BaseOpenmrsService implements Publishe
 	            connection = factory.newConnection();
 	            Channel channel = connection.createChannel();
 
-	            channel.exchangeDeclare( EXCHANGE_NAME, "direct" );
+	            channel.exchangeDeclare( EXCHANGE_NAME, "direct" , true);
 
 	            channel.basicPublish( EXCHANGE_NAME, topic, MessageProperties.PERSISTENT_TEXT_PLAIN, msg.getBytes() );
 	            System.out.println( " [x] Sent '" + msg + "'" );
