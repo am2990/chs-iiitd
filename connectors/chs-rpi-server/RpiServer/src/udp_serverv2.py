@@ -1,10 +1,9 @@
 import socket
 import sys
-import pulseoxy
 import fcntl
 import struct
 import platform
-import pup
+import pulse
 import time
 import commands
 import bp
@@ -149,7 +148,7 @@ while True:
 				if po=='':
 					readings=[[-1,-1]]
 				else:
-					readings=pup.readsensor(1,po)
+					readings=pulse.readsensor(1,po)
 					sensorname='nonin'
 			elif "bp" in data:
 				if bp=='':
