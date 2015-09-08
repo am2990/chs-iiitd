@@ -38,6 +38,7 @@ import com.iiitd.navigationexample.NavigationDrawerFragment;
 import com.iiitd.navigationexample.R;
 import com.iiitd.sqlite.helper.DatabaseHelper;
 import com.iiitd.sqlite.model.Patient;
+import com.iiitd.sqlite.model.PatientObservation;
 
 
 @SuppressWarnings("deprecation")
@@ -73,8 +74,7 @@ public class MainActivity extends ActionBarActivity implements
 		// Set up the drawer.
 		mNavigationDrawerFragment.setUp(R.id.navigation_drawer,
 				(DrawerLayout) findViewById(R.id.drawer_layout));
-		
-		
+			
 		
 		if (savedInstanceState == null) {
             FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
@@ -186,9 +186,18 @@ public class MainActivity extends ActionBarActivity implements
 		if (id == R.id.action_sync) {
 			//TODO use Sync adapter
 //			AMQPImpl syncer = new AMQPImpl();
-			String msg = "UUID: e4a94948-3e77-4279-8b05-f898a2db94d9:test 2:08/02/15:Male:57:allergies:11:11";
-			amqpIntent.putExtra(Constants.AMQP_PUBLISH_MESSAGE, msg);
-			startService(MainActivity.amqpIntent);
+			String msg = "UUID: e4a94948-3e77-4279-8b05-f898a2db94d9:test patient:08/25/15:Male:57:list of allergies:11:11";
+			
+			DatabaseHelper db = new DatabaseHelper(mContext);
+			List<Patient> p_list = db.getAllPatientsObjects();
+			for(Patient p: p_list){
+				List<PatientObservation> obs_list = db.getObsById(p.getId());
+				for(PatientObservation obs: obs_list){
+					msg = p.getUUID() +":"+p.getName()+":"+p.getDob()+":"+p.getGender()+":"+obs.getTemperature()+":"+obs.getAllergies()+":84:78";
+				}
+				amqpIntent.putExtra(Constants.AMQP_PUBLISH_MESSAGE, msg);
+				startService(MainActivity.amqpIntent);
+			}
 			Toast.makeText(this, "Started Sync", Toast.LENGTH_LONG).show();;
 			
 			

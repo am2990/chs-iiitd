@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">CHS Mobile</string>
+    <string name="title_section1">History</string>
+    <string name="title_section2">Notifications</string>
+    <string name="title_section3">Add/Modify Sensors</string>
+    <string name="title_section4">Help and Feedback</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_example">Example action</string>
+    <string name="action_settings">Settings</string>
+    <string name="action_search">Search</string>
+    <string name="action_sync">Sync</string>
+
+    <!-- Demographic Form -->
+    <string name="demographic_form">Registration Form</string>
+    <string name="patientname">Name</string>
+    <string name="pick_date">Date</string>
+    <string name="title_activity_registration">RegistrationActivity</string>
+    <string name="patientdob">Date of Birth</string>
+    <string name="addObs">Add Observations</string>
+    <string name="male">Male</string>
+    <string name="female">Female</string>
+    <string name="title_activity_observation">ObservationActivity</string>
+    <string name="hello_world">Hello world!</string>
+
+    <!-- Observation Form -->
+    <string name="obs_form">Observation Form</string>
+    <string name="temperature">Temperature</string>
+    <string name="allergies">Allergies</string>
+    <string name="getSensorReading">Get Sensor Reading</string>
+    <string name="title_activity_pulse_ox_application">PulseOx Sensor</string>
+    <string name="Save">Save</string>
+
+    <!-- SensorActivity -->
+    <string name="search">Scan</string>
+
+    <!-- PulseOx Activity -->
+    <string name="connect_button_txt">Press to Get Reading</string>
+    <string name="pulse_label">Reading 1: </string>
+    <string name="oxygen_label">Reading 2: </string>
+    <string name="status_label">Probe Status</string>
+    <string name="zero">0</string>
+    <string name="status_default">Not Connected</string>
+    <string name="record_button_txt">Press Here to Record Results</string>
+    <string name="title_activity_patient">Patient History</string>
+    <string name="title_activity_sensor">SensorActivity</string>
+    <string name="title_activity_add_device">AddDeviceActivity</string>
+    
+    <string name="add_device">Add Device</string>
+    <string name="title_activity_patient_history">Encounter Details</string>
+
+</resources>

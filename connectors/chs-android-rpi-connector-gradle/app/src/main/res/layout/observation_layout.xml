@@ -1,0 +1,108 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.iiitd.form.ObservationActivity" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/ObsForm"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/obs_form"
+            android:textSize="10pt" >
+        </TextView>
+
+        <EditText
+            android:id="@+id/Temperature"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/temperature" >
+        </EditText>
+
+        <EditText
+            android:id="@+id/Allergies"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/allergies" >
+        </EditText>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" >
+
+            <TableRow
+                android:id="@+id/obs_tableRow1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10sp" >
+
+                <TextView
+                    android:id="@+id/obs_pulse"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="4sp"
+                    android:text="@string/pulse_label"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:id="@+id/obs_pulseReading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="4sp"
+                    android:gravity="center_horizontal"
+                    android:text="@string/zero"
+                    android:textColor="#408040"
+                    android:textSize="28sp" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/obs_tableRow2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="10sp" >
+
+                <TextView
+                    android:id="@+id/obs_oxygen"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="20sp"
+                    android:text="@string/oxygen_label"
+                    android:textSize="28sp" />
+
+                <TextView
+                    android:id="@+id/obs_oxygenReading"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:drawablePadding="20sp"
+                    android:gravity="center_horizontal"
+                    android:text="@string/zero"
+                    android:textColor="#0000ff"
+                    android:textSize="28sp" />
+            </TableRow>
+
+            <Button
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:onClick="addSensor"
+                android:text="@string/getSensorReading" />
+        </TableLayout>
+
+        <Button
+            android:id="@+id/save"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="end"
+            android:onClick="saveObservation"
+            android:text="@string/Save" />
+    </LinearLayout>
+
+</ScrollView>

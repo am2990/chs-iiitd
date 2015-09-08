@@ -76,7 +76,7 @@ public class PulseOxApplication extends BaseActivity {
 	
 	// Used to only play the beep once when an getting an accurate reading
 	private boolean playBeep = true;
-	private boolean running = false , bOx = false , bPulse = false;;
+	private boolean receiveRunning = false , bOx = false , bPulse = false;;
 	//plots for plotting the data from the oxygen sensor
 	private SimpleXYSeries plenthSeries;
 	private XYPlot dataPlot;
@@ -129,22 +129,22 @@ public class PulseOxApplication extends BaseActivity {
 		isConnected = true;
 		mAnswerOx = 0;
 		mAnswerPulse = 0;
-		
-		new UDPReceiveTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-	//   allow network on main threa 
-		
+//		
+//		UDPReceiveTask udpReceive = new UDPReceiveTask();
+//		udpReceive.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		new UDPReceiveTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);		
 		
 		Log.d(TAG, "on create");
 	}
 	
 	protected void onResume() {
 		super.onResume();
-		running = true;
+		
 	}
 	
     protected void onPause() {
         super.onPause();
-        running = false;
+        
 		// stop the processor of data
 		
     }
@@ -159,6 +159,7 @@ public class PulseOxApplication extends BaseActivity {
 		Log.d(TAG, "connect button pressed");
 		pulseOxId = "yes";
 		if (pulseOxId == null) {
+			//TODO check for online devices
 			launchSensorDiscovery();
 		} else {
 			connectPulseOx();
@@ -250,7 +251,7 @@ public class PulseOxApplication extends BaseActivity {
 					DatagramSocket receive = new DatagramSocket(server_port);
 					receive.receive(dp);
 					text = new String(message, 0, dp.getLength());
-					Log.d("Udp Receive","message:" + text);
+					Log.d(TAG,"message:" + text);
 					receive.close();
 					parseMessage(text);
 
@@ -345,7 +346,7 @@ public class PulseOxApplication extends BaseActivity {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
 			Log.d(TAG, "KeyDown");
-			running = false;
+			
 			returnValuetoCaller();
 			break;
 		}
@@ -383,6 +384,7 @@ public class PulseOxApplication extends BaseActivity {
 		    		 int msg_length=messageStr.length();
 		    		 byte[] message = messageStr.getBytes();
 		    		 DatagramPacket p = new DatagramPacket(message, msg_length,local,server_port);
+		    		 isConnected = true;
 		    		 for(int i =0;i<10;i++){
 		    			 send.send(p);
 		    		 }
@@ -404,8 +406,9 @@ public class PulseOxApplication extends BaseActivity {
 	     protected void onPostExecute(Long result) {
 //	         showDialog("Downloaded " + result + " bytes");
 	    	 try {
+	    		
 				Thread.sleep(500);
-				isConnected = false;
+				
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
@@ -413,29 +416,41 @@ public class PulseOxApplication extends BaseActivity {
 	 }
 
 	private class UDPReceiveTask extends AsyncTask<URL, Integer, Long> {
-	     protected Long doInBackground(URL... urls) {
+		DatagramSocket receive = null; 
+		protected Long doInBackground(URL... urls) {
 //	    	 UDPMulticast udp = new UDPMulticast(mContext, "224.3.29.71" , 10000);
+	    	 
 	    	 try{
-	    		 while(isConnected){
+	    		 while(true){
+	    			 if(!isConnected)
+	    				 continue;
 		    		 String text;
 		    		 int server_port = 10002;
 		    		 byte[] message = new byte[1500];
 		    		 DatagramPacket p = new DatagramPacket(message, message.length);
-		    		 DatagramSocket receive = new DatagramSocket(server_port);
-		    		 receive.setSoTimeout(5000);
+		    		 receive = new DatagramSocket(server_port);
+		    		 receive.setSoTimeout(3000);
+//		    		 receive.setReuseAddress(true);
+		    		 Log.d(TAG, "Waiting to Receive");
 		    		 receive.receive(p);
 		    		 text = new String(message, 0, p.getLength());
-		    		 Log.d("Udp Receive","message:" + text);
+		    		 Log.d(TAG,"message:" + text);
 	                 receive.close();
 	                 parseMessage(text);
 	                 
 	    		 }
 	    	 }catch(Exception e){
+	    		 receive.close();
 	    		 e.printStackTrace();
 	    	 }
 
 
 	    	 return 0L;
+	     }
+	     
+	     @Override
+	     protected void onPreExecute() {
+	    	 isConnected = false;
 	     }
 
 	     protected void onProgressUpdate(Integer... progress) {
@@ -443,7 +458,7 @@ public class PulseOxApplication extends BaseActivity {
 	     }
 
 	     protected void onPostExecute(Long result) {	    	 
-   		 
+	    	 	receive.close();
 	    	 	for(Pair p : pulse_ox ){
 	    	 	int pulse = (int) p.getLeft();
 	    	 	int ox = (int) p.getRight();
@@ -517,7 +532,7 @@ public class PulseOxApplication extends BaseActivity {
 					JSONArray points_arr = sens.getJSONArray("readings");
 					for(int j = 0 ; j < points_arr.length() ; j++){
 						JSONArray point_tuple = (JSONArray) points_arr.get(j);
-						Pair<Integer,Integer> p = new Pair(point_tuple.get(0),point_tuple.get(0));
+						Pair<Integer,Integer> p = new Pair(point_tuple.get(0),point_tuple.get(1));
 						pulse_ox.add(p);
 					}
 					

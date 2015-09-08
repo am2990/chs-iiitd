@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="com.iiitd.navigationexample.MainActivity" >
+
+    <item android:id="@+id/action_search"
+          android:icon="@drawable/ic_search_api_holo_light"
+          android:title="@string/action_search"
+          app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="never"/>
+    <item
+        android:id="@+id/action_sync"
+        android:orderInCategory="100"
+        android:title="@string/action_sync"
+        app:showAsAction="never"/>
+
+</menu>

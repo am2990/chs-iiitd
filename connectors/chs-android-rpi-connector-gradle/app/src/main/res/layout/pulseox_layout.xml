@@ -1,0 +1,130 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.iiitd.sensor.pulseox.PulseOxApplication" >
+
+    <Spinner
+        android:id="@+id/sensor_spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <Button
+        android:id="@+id/connect"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:onClick="connectButtonAction"
+        android:paddingBottom="25dp"
+        android:paddingTop="25dp"
+        android:text="@string/connect_button_txt" />
+
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" >
+
+        <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10sp" >
+
+            <TextView
+                android:id="@+id/pulse"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="4sp"
+                android:text="@string/pulse_label"
+                android:textSize="28sp" />
+
+            <TextView
+                android:id="@+id/pulseReading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="4sp"
+                android:gravity="center_horizontal"
+                android:text="@string/zero"
+                android:textColor="#408040"
+                android:textSize="28sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="10sp" >
+
+            <TextView
+                android:id="@+id/oxygen"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="20sp"
+                android:text="@string/oxygen_label"
+                android:textSize="28sp" />
+
+            <TextView
+                android:id="@+id/oxygenReading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="20sp"
+                android:gravity="center_horizontal"
+                android:text="@string/zero"
+                android:textColor="#0000ff"
+                android:textSize="28sp" />
+        </TableRow>
+
+        <TableRow
+            android:id="@+id/tableRow3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dip" >
+
+            <TextView
+                android:id="@+id/probeStatusLabel"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="20sp"
+                android:text="@string/status_label"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/probeStatus"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:drawablePadding="20sp"
+                android:gravity="center_horizontal"
+                android:text="@string/status_default"
+                android:textSize="16sp" />
+        </TableRow>
+    </TableLayout>
+
+    <Button
+        android:id="@+id/record"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:onClick="recordButtonAction"
+        android:paddingBottom="25dp"
+        android:paddingTop="25dp"
+        android:text="@string/record_button_txt"
+        android:textSize="28sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+
+        <com.androidplot.xy.XYPlot
+            android:id="@+id/dataPlot"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="10dp"
+            title="Pulse" />
+    </LinearLayout>
+
+</LinearLayout>

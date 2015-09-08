@@ -257,7 +257,7 @@ public class SensorActivity extends ListActivity{
 		    		 receive.receive(p);
 		    		 text = new String(message, 0, p.getLength());
 		    		 Log.d("Udp Receive","message:" + text);
-	                 
+	                 receive.close();
 	                 parseMessage(text);
 	                 
 	    		 }

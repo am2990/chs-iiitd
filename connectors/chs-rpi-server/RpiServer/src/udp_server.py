@@ -20,7 +20,7 @@ sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 # Bind the socket to the port
 
 
-#TODO get ip from program
+#TODO find if using a windows machine or linux machine and use appropriate IP address technique
 ip = socket.gethostbyname(socket.gethostname())
 #ip_lin = get_ip_address('wlan0')
 
@@ -39,7 +39,6 @@ while True:
                 recv_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 
                 #TODO find if the packet is a discover packet or request packet
-                #TODO pick self ip addresses automatically
                 #TODO pick remote ip addresses from json
                 #TODO extract port from message
                 #TODO populate sensors from a settings file
