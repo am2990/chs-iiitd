@@ -7,6 +7,7 @@ import pulse
 import time
 import commands
 import bp
+import json
 
 
 def sensorconnected():
@@ -133,6 +134,12 @@ while True:
                 if "discover" in data :
                         t = gettime()
                         server_address = (address[0], 10001)
+                        message = dict()
+                        message[""]=""
+                        message[""]=""
+                        message[""]=""
+                        message[""]=""
+                        message[""]=""
 			message = """{ type: "discover_reply", name:"rpi_board" , sdr:"""+str(ip)+"""  , rcv:"""+str(address[0])+""" , mac:"""+str(mac)+""", time:"""+t+""" , argv:"""+sensors+"""}"""
                         try:
                     # Send data
