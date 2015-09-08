@@ -24,22 +24,22 @@ def sensorconnected():
 			po=port1
 			bp=port2
 			p['sensorid']=1
-			p['sensorname']=nonin
-			p['sensortype']=medical
+			p['sensorname']='nonin'
+			p['sensortype']='medical'
 			b['sensorid']=2
-			b['sensorname']=bp
-			b['sensortype']=medical
+			b['sensorname']='bp'
+			b['sensortype']='medical'
 			sensors.append(p)
 			sensors.append(b)
 		except ValueError:
 			po=port2
 			bp=port1
 			b['sensorid']=1
-			b['sensorname']=bp
-			b['sensortype']=medical
+			b['sensorname']='bp'
+			b['sensortype']='medical'
 			p['sensorid']=2
-			p['sensorname']=nonin
-			p['sensortype']=medical
+			p['sensorname']='nonin'
+			p['sensortype']='medical'
 			sensors.append(b)
 			sensors.append(p)
 		return po,bp,sensors
@@ -48,15 +48,15 @@ def sensorconnected():
 			pup.readsensor(1,port1)
 			po=port1
 			p['sensorid']=1
-			p['sensorname']=nonin
-			p['sensortype']=medical
+			p['sensorname']='nonin'
+			p['sensortype']='medical'
 			sensors.append(p)
 		except ValueError:
 			print "only BP sensor connected in PORT1"
 			bp=port1
 			b['sensorid']=1
-			b['sensorname']=bp
-			b['sensortype']=medical
+			b['sensorname']='bp'
+			b['sensortype']='medical'
 			sensors.append(b)
 		return po,bp,sensors
 	elif 'USB1' in portlist:
@@ -64,15 +64,15 @@ def sensorconnected():
 			pup.readsensor(1,port2)
 			po=port2
 			p['sensorid']=1
-			p['sensorname']=nonin
-			p['sensortype']=medical
+			p['sensorname']='nonin'
+			p['sensortype']='medical'
 			sensors.append(p)
 		except ValueError:
 			print "only BP sensor connected in PORT2"
 			bp=port2
 			b['sensorid']=1
-			b['sensorname']=bp
-			b['sensortype']=medical
+			b['sensorname']='bp'
+			b['sensortype']='medical'
 			sensors.append(b)
 		return po,bp,sensors
 	else:
