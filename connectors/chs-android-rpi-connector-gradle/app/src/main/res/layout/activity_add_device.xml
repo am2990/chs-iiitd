@@ -33,19 +33,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="90dp" />
-
-    <TextView
-        android:id="@+id/device_sensor2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="110dp"
-        android:text="@string/hello_world" />
-    
-    <TextView
-        android:id="@+id/device_sensor3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="120dp" />
     
     <Button
         android:layout_width="match_parent"

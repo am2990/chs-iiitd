@@ -46,7 +46,7 @@
     <string name="record_button_txt">Press Here to Record Results</string>
     <string name="title_activity_patient">Patient History</string>
     <string name="title_activity_sensor">SensorActivity</string>
-    <string name="title_activity_add_device">AddDeviceActivity</string>
+    <string name="title_activity_add_device">Device Details</string>
     
     <string name="add_device">Add Device</string>
     <string name="title_activity_patient_history">Encounter Details</string>

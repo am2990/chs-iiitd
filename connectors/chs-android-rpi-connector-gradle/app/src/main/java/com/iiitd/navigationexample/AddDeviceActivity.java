@@ -21,7 +21,7 @@ import com.iiitd.sqlite.helper.DatabaseHelper;
 public class AddDeviceActivity extends ActionBarActivity {
 
 	NetworkDevice device;
-	TextView dv_name, dv_ip, dv_mac, dv_sensor1, dv_sensor2;
+	TextView dv_name, dv_ip, dv_mac, dv_sensor;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -34,32 +34,38 @@ public class AddDeviceActivity extends ActionBarActivity {
 		dv_name = (TextView)findViewById(R.id.device_name);
 		dv_ip = (TextView)findViewById(R.id.device_ip);
 		dv_mac = (TextView)findViewById(R.id.device_mac);
-		dv_sensor1 = (TextView)findViewById(R.id.device_sensor1);
-		dv_sensor2 = (TextView)findViewById(R.id.device_sensor2);
-		System.out.println("Item Selected from List-"+device.getDeviceName() +"(and has patient id"+device.getMacAddress());
-		
+		dv_sensor = (TextView)findViewById(R.id.device_sensor1);
+
+
 		dv_name.setText(device.getDeviceName());
 		dv_ip.setText(device.getIpAddress());
 		dv_mac.setText(device.getMacAddress());
 		//TODO account for dynamic sensor fetching
-		List<Sensor> s =  device.getSensorList();
-		if(s.size() == 1)
-			dv_sensor1.setText(s.get(0).getSensorName());
-		else if(s.size() == 2)
-			dv_sensor2.setText(s.get(1).getSensorName());
-		
-		
+		List<Sensor> sensor_list =  device.getSensorList();
+		String sensor_disp = "";
+		for(Sensor sensor : sensor_list){
+			sensor_disp += sensor.toString() +"\n";
+		}
+		dv_sensor.setText(sensor_disp);
 		
 	}
 	
 	public void addDevice(View v){
 		
 		DatabaseHelper db = new DatabaseHelper(this);
-		long response = db.addConnectedDevice(device);
-		db.closeDb();
+		long response_device = db.addConnectedDevice(device);
+
 		
-		if(response == 0)
-			Toast.makeText(this, "Already Exits", Toast.LENGTH_LONG).show();
+		if(response_device == 0)
+			Toast.makeText(this, "Device with MAC already Exits !!!", Toast.LENGTH_LONG).show();
+
+		for(Sensor sensor: device.getSensorList()) {
+			long response_sensor = db.addSensor(sensor);
+		}
+
+		db.closeDb();
+		Toast.makeText(this, "Device Successfully Added !!!", Toast.LENGTH_LONG).show();
+
 		Intent i = new Intent(this, MainActivity.class);
 		startActivity(i);
 		

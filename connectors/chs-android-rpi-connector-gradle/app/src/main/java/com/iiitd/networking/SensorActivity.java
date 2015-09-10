@@ -165,6 +165,7 @@ public class SensorActivity extends ListActivity{
 	private class UDPSendTask extends AsyncTask<String, Integer, Long> {
 	     protected Long doInBackground(String... ips) {
 //	    	 UDPMulticast udp = new UDPMulticast(mContext, "224.3.29.71" , 10000);
+			 //TODO disable click on listview while discovery in progress
 	    	 try{
 	    		 String messageStr="discover:10001";
 	    		 int server_port = 10000;
@@ -218,11 +219,14 @@ public class SensorActivity extends ListActivity{
 					JSONObject sens = new JSONObject(c.toString());
 					String sensorname = (String) sens.get("sensorname");
 					int sensorid = (int) sens.get("sensorid");
+					String sensortype = (String) sens.get("sensortype");
+					int sensorreadings = (int) sens.get("sensorreadings");
 
 					Sensor s = new Sensor();
 					s.setId(sensorid);
 					s.setSensorName(sensorname);
 					s.setSensorType(SensorType.MEDICAL);
+					s.setReadingCount(sensorreadings);
 					sensorList.add(s);
 
 				}
@@ -288,7 +292,7 @@ public class SensorActivity extends ListActivity{
 //	         showDialog("Downloaded " + result + " bytes");
 			 Toast.makeText(mContext,"Discovery Complete...", Toast.LENGTH_LONG).show();
 			 receiverRunning = false;
-
+			 //TODO enable click on listview while discovery in progress
 	     }
 	 }
 

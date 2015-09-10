@@ -71,6 +71,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     private static final String KEY_SENSORNAME = "sensor_name";
     private static final String KEY_SENSORTYPE = "sensor_type";
     private static final String KEY_SENSOR_READINGS = "sensor_reading";
+    private static final String KEY_SENSOR_READING_COUNT = "sensor_reading_count";
     
     
     // Table Create Statements
@@ -98,7 +99,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     private static final String CREATE_TABLE_SENSORS = "CREATE TABLE " + TABLE_SENSORS
     		+ "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_SENSORNAME + " TEXT," + KEY_SENSORTYPE + " TEXT,"
-    		+ KEY_SENSOR_READINGS + " TEXT," +   KEY_CREATED_AT + " DATETIME" + ")";
+    		+ KEY_SENSOR_READINGS + " TEXT," + KEY_SENSOR_READING_COUNT + " INTEGER," +    KEY_CREATED_AT + " DATETIME" + ")";
 
     
     
@@ -273,6 +274,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         values.put(KEY_SENSORNAME, sensor.getSensorName());
         values.put(KEY_SENSORTYPE, sensor.getSensorType().toString());
         values.put(KEY_SENSOR_READINGS, gson.toJson(sensor.getReadings()));
+        values.put(KEY_SENSOR_READING_COUNT, sensor.getReadingCount());
         values.put(KEY_CREATED_AT, getDateTime());
      
         // insert row
