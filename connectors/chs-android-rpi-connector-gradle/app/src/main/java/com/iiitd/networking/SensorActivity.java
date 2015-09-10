@@ -38,20 +38,24 @@ import com.iiitd.navigationexample.R;
 
 public class SensorActivity extends ListActivity{
 
+	public static final String TAG = "SensorActivity";
 	private Context mContext;
 	private List<NetworkDevice> deviceList;
     ListView listView ;
     SimpleCursorAdapter mAdapter;
     ArrayAdapter<NetworkDevice> adapter;
     BlockingQueue<String> ipList;
- 		
+    AsyncTask UdpReceiver = null;
+	private static boolean receiverRunning = false;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		setContentView(R.layout.activity_sensor);	
+		setContentView(R.layout.activity_sensor);
 		mContext = this;
 		ipList = new LinkedBlockingQueue<String>();
 		// Create a progress bar to display while the list loads
+		//TODO Push progress bar to the centre
         ProgressBar progressBar = new ProgressBar(this);
         progressBar.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
                 LayoutParams.WRAP_CONTENT, Gravity.CENTER));
@@ -62,16 +66,16 @@ public class SensorActivity extends ListActivity{
         ViewGroup root = (ViewGroup) findViewById(android.R.id.content);
         root.addView(progressBar);
 
-        
+
         // Create an empty adapter we will use to display the loaded data.
         // We pass null for the cursor, then update it in onLoadFinished()
         deviceList = new ArrayList<NetworkDevice>();
-        
+
         adapter = new ArrayAdapter<NetworkDevice>(this,
         		android.R.layout.simple_list_item_1, deviceList);
         setListAdapter(adapter);
-
-        
+		UdpReceiver = new UDPReceiveTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+		getClientList();
 	}
 
 	@Override
@@ -92,32 +96,33 @@ public class SensorActivity extends ListActivity{
 		}
 		return super.onOptionsItemSelected(item);
 	}
-	
-	
-	@Override 
+
+
+	@Override
     public void onListItemClick(ListView l, View v, int position, long id) {
 
 		final NetworkDevice item = (NetworkDevice) l.getItemAtPosition(position);
 		//Why has the item been removed ?
+
 		deviceList.remove(item);
+		Log.v(TAG, "Network Device" + item + " has MAC "+item.getMacAddress());
+
 		Intent i = new Intent(this, AddDeviceActivity.class);
 		i.putExtra("device", item);
 		startActivity(i);
-		System.out.println("Item Selected from List-"+item +"(and has patient id"+item.getMacAddress());
+
     }
-	
-	
+
+
 	public void startDiscovery(View v){
-		
-		//TODO push Scan button to base and full width
-		new UDPReceiveTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		//TODO if hotspot is enabled then find clients from hotspot else use Multicast discovery over Network 
+
+        if(!receiverRunning)
+            UdpReceiver = new UDPReceiveTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+		//TODO if hotspot is enabled then find clients from hotspot else use Multicast discovery over Network
 		getClientList();
-		
-		
-//		new UDPMulticastTask().execute();
 	}
-	
+
 	public void getClientList() {
 	    int macCount = 0;
 	    BufferedReader br = null;
@@ -154,9 +159,9 @@ public class SensorActivity extends ListActivity{
 	        }
 	    } catch(Exception e) {
 	    	e.printStackTrace();
-	    }               
+	    }
 	}
-	
+
 	private class UDPSendTask extends AsyncTask<String, Integer, Long> {
 	     protected Long doInBackground(String... ips) {
 //	    	 UDPMulticast udp = new UDPMulticast(mContext, "224.3.29.71" , 10000);
@@ -192,45 +197,36 @@ public class SensorActivity extends ListActivity{
 //	         showDialog("Downloaded " + result + " bytes");
 	     }
 	 }
-	
+
 	private String parseMessage(String msg){
-		
+
 		try{
 
-			//TODO REMOVE THIS Hardcoded Add
-//			NetworkDevice n2 = new NetworkDevice();
-//			n2.setDeviceName("Rpi Board");
-//			n2.setIpAddress("192.168.43.123");
-//			n2.setMacAddress("AA:BB:CC");
-//
-//			if(!deviceList.contains(n2)){
-//				deviceList.add(n2);
-//			}
 
 			JSONObject obj = new JSONObject(msg);
 			String packet_type = obj.getString("type");
-			
+
 			if(packet_type.equalsIgnoreCase("discover_reply")){
 				String name = obj.getString("name");
 				String ip = obj.getString("sdr");
 				String mac = obj.getString("mac");
 				JSONArray arr = obj.getJSONArray("argv");
-				
+
 				List<Sensor> sensorList = new ArrayList<Sensor>();
 				for (int i = 0; i < arr.length(); i++){
 					Object c = arr.get(i);
 					JSONObject sens = new JSONObject(c.toString());
 					String sensorname = (String) sens.get("sensorname");
 					int sensorid = (int) sens.get("sensorid");
-					
+
 					Sensor s = new Sensor();
 					s.setId(sensorid);
 					s.setSensorName(sensorname);
 					s.setSensorType(SensorType.MEDICAL);
 					sensorList.add(s);
-					
+
 				}
-				
+
 				NetworkDevice n = new NetworkDevice();
 		    	n.setDeviceName(name);
 		    	n.setIpAddress(ip);
@@ -241,17 +237,17 @@ public class SensorActivity extends ListActivity{
 		    		deviceList.add(n);
 		    	}
 			}
-			
-			
+
+
 
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		
+
 		return msg;
-		
+
 	}
-	
+
 	private class UDPReceiveTask extends AsyncTask<URL, Integer, Long> {
 	     protected Long doInBackground(URL... urls) {
 //	    	 UDPMulticast udp = new UDPMulticast(mContext, "224.3.29.71" , 10000);
@@ -264,16 +260,18 @@ public class SensorActivity extends ListActivity{
 		    		 DatagramPacket p = new DatagramPacket(message, message.length);
 		    		 receive = new DatagramSocket(server_port);
 		    		 receive.setSoTimeout(5000);
+					 receiverRunning = true;
+					 Log.d("Udp Receive","Receiver Waiting to Discovery Response...");
 		    		 receive.receive(p);
 		    		 text = new String(message, 0, p.getLength());
 		    		 Log.d("Udp Receive","message:" + text);
 	                 receive.close();
 	                 parseMessage(text);
-	                 
+					 publishProgress(0);
 	    		 }
 	    	 }catch(InterruptedIOException e){
 	    		 receive.close();
-	    	 }catch(Exception e){ 
+	    	 }catch(Exception e){
 	    		 e.printStackTrace();
 	    	 }
 
@@ -283,12 +281,14 @@ public class SensorActivity extends ListActivity{
 
 	     protected void onProgressUpdate(Integer... progress) {
 //	         setProgressPercent(progress[0]);
+			 adapter.notifyDataSetChanged();
 	     }
 
 	     protected void onPostExecute(Long result) {
 //	         showDialog("Downloaded " + result + " bytes");
-	    	 
-    		 adapter.notifyDataSetChanged();
+			 Toast.makeText(mContext,"Discovery Complete...", Toast.LENGTH_LONG).show();
+			 receiverRunning = false;
+
 	     }
 	 }
 
