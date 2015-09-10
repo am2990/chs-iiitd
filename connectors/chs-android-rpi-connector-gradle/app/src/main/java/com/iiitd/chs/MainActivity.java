@@ -65,17 +65,11 @@ public class MainActivity extends ActionBarActivity implements
 	
 	private ListView mDrawerListView;
 
-	private RecyclerView recyclerView ;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
-
-		recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-		final LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-
-		recyclerView.setLayoutManager(layoutManager);
 
 
 		mContext = this;
@@ -99,19 +93,6 @@ public class MainActivity extends ActionBarActivity implements
 		
 		LocalBroadcastManager.getInstance(this).registerReceiver(onNotification,
 				new IntentFilter(Constants.BROADCAST_ACTION));
-
-
-		DatabaseHelper db = new DatabaseHelper(this);
-		List<Patient> allEntries = db.getAllPatientsObjects();
-		Patient[] itemsData = new Patient[allEntries.size()];
-
-		for (int i = 0; i < allEntries.size(); i++) {
-			itemsData[i] = new Patient(allEntries.get(i).getUUID(), allEntries.get(i).getName(),allEntries.get(i).getGender(), allEntries.get(i).getDob());
-		}
-
-		PatientAdapter myAdapter = new PatientAdapter(itemsData);
-		recyclerView.setAdapter(myAdapter);
-		recyclerView.setItemAnimator(new DefaultItemAnimator());
 
 	}
 
