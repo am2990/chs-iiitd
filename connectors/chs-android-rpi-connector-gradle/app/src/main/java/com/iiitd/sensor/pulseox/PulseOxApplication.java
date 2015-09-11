@@ -14,7 +14,10 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 import org.opendatakit.sensors.service.BaseActivity;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -45,7 +48,7 @@ import com.iiitd.networking.Sensor;
 import com.iiitd.sqlite.helper.DatabaseHelper;
 import com.iiitd.sqlite.helper.Pair;
 
-public class PulseOxApplication extends BaseActivity {
+public class PulseOxApplication extends Activity{
 
 	// Tag for Logging
 	private static final String TAG = "PulseOxApp";
@@ -76,6 +79,7 @@ public class PulseOxApplication extends BaseActivity {
 	private BlockingQueue<Pair> pulse_ox = new LinkedBlockingQueue<Pair>();
 	
 	private boolean isConnected;
+	private boolean getReadings;
 	
 	private Context mContext;
 	
@@ -97,6 +101,9 @@ public class PulseOxApplication extends BaseActivity {
 	private NetworkDevice selectedDevice;
 	private Sensor selectedSensor;
 
+	AsyncTask udpSend;
+	AsyncTask udpReceive;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -111,6 +118,8 @@ public class PulseOxApplication extends BaseActivity {
 		probeConnectionButton = (Button) findViewById (R.id.connect);
 		recordPulseOxButton = (Button) findViewById (R.id.record);
 
+		probeConnectionButton.setEnabled(false);
+
 		populateDeviceSpinners();
 
 		Spinner s = (Spinner) findViewById(R.id.sensor_spinner);
@@ -124,7 +133,7 @@ public class PulseOxApplication extends BaseActivity {
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 				Log.d(TAG, "Sensor selected at position "+position);
 				selectedSensor = sensorAdapter.getItem(position);
-
+				probeConnectionButton.setEnabled(true);
 			}
 
 			@Override
@@ -171,8 +180,6 @@ public class PulseOxApplication extends BaseActivity {
 //		
 //		UDPReceiveTask udpReceive = new UDPReceiveTask();
 //		udpReceive.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-		new UDPReceiveTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);		
-		
 		Log.d(TAG, "on create");
 	}
 
@@ -203,6 +210,7 @@ public class PulseOxApplication extends BaseActivity {
 				Log.d(TAG, "Network Device selected on position " + position);
 				//get the device
 				NetworkDevice device = nd.get(0);
+				selectedDevice = device;
 				//get list of sensors on device
 				List<Sensor> sensors = device.getSensorList();
 				// populate sensor spinner
@@ -221,11 +229,6 @@ public class PulseOxApplication extends BaseActivity {
 
 			}
 		});
-//		deviceSpinner = new String[nd.size()];
-//		int i = 0;
-//		for(NetworkDevice device : nd){
-//			deviceSpinner[i++] = device.toString();
-//		}
 
 	}
 
@@ -236,9 +239,7 @@ public class PulseOxApplication extends BaseActivity {
 	
     protected void onPause() {
         super.onPause();
-        
-		// stop the processor of data
-		
+
     }
     
 	@Override
@@ -252,89 +253,52 @@ public class PulseOxApplication extends BaseActivity {
 		Spinner spinner = (Spinner)findViewById(R.id.sensor_spinner);
 		this.selected = spinner.getSelectedItem().toString();
 		pulseOxId = "yes";
-		if (pulseOxId == null) {
-			//TODO check for online devices
-			launchSensorDiscovery();
-		} else {
-			connectPulseOx();
-		}
+		getSensorReadings();
+
 	}
 
 	public void recordButtonAction(View view) {
 		Log.d(TAG, "record button pressed");
-		returnValuetoCaller();
+		getReadings = false;
+//		if(udpSend.isCancelled() && udpReceive.isCancelled()){
+			new AlertDialog.Builder(this)
+					.setTitle("Save Values")
+					.setMessage("Are you sure you want to save this entry?")
+					.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							// continue with delete
+						}
+					})
+					.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+						public void onClick(DialogInterface dialog, int which) {
+							// do nothing
+						}
+					})
+					.setIcon(android.R.drawable.ic_dialog_alert)
+					.show();
+//		returnValuetoCaller();
+//		}
+
 	}
 	
-	private void connectPulseOx() {
-		
-		if (pulseOxId == null) {
-			Log.e(TAG, "ERROR: Somehow tried to connect when no ID is present");
-			return;
-		}
-		new UDPSendTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+	private void getSensorReadings() {
+
 		isConnected = true;
-//		try {
-//			if (!isConnected(pulseOxId)) {
-//				Log.d(TAG, "connecting to sensor: " + pulseOxId);
-//				sensorConnect(pulseOxId, null);
-//				pulseTxt.setText("IN CONNECTING");
-//				probeConnectionButton.setText("PROBLEM DETECTING PROBE\n Retry PulseOx Probe Connect");
-//				
-//			}
-//			if (isConnected(pulseOxId)) {
-//				Log.d(TAG, "starting pulse ox sensor: " + pulseOxId);
-//				isConnected = true;
-//				startSensor(pulseOxId);
-//				pulseTxt.setText("IN STARTING");
-//				probeConnectionButton.setText("Restart PulseOx Probe Connection");
-//				
-//				
-//				
-//			} else {
-//				Log.d(TAG, "Trouble in connecting to pulseOx sensor");
-//			}
-//		} catch (RemoteException rex) {
-//			rex.printStackTrace();
-//		}
-	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-		super.onActivityResult(requestCode, resultCode, data);
-
-		Log.d(TAG, "onActivityResult resultCode" + resultCode
-				+ "  and  requestCode" + requestCode);
-
-		if (requestCode == SENSOR_DISCOVERY_RETURN) {
-			// from addSensorActvitity
-			if (resultCode == RESULT_OK) {
-				// Get sensor id and state from result
-				if (data.hasExtra("sensor_id")) {
-					pulseOxId = data.getStringExtra("sensor_id");
-
-					// update sensor id stored in preferences
-					SharedPreferences.Editor prefsEditor = getPreferences(
-							MODE_PRIVATE).edit();
-					prefsEditor.putString(OX_SENSOR_ID_STR, pulseOxId);
-					prefsEditor.commit();
-
-					// connect to sensor
-					connectPulseOx();
-				} else {
-					Log.d(TAG, "activity result returned without sensorID");
-				}
+		getReadings = true;
+		while(true) {
+			udpSend = new UDPSendTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+			if (udpSend.getStatus() == AsyncTask.Status.RUNNING) {
+				udpReceive = new UDPReceiveTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+				break;
 			}
 		}
 	}
-
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		switch (keyCode) {
 		case KeyEvent.KEYCODE_BACK:
 			Log.d(TAG, "KeyDown");
-			
 			returnValuetoCaller();
 			break;
 		}
@@ -344,7 +308,6 @@ public class PulseOxApplication extends BaseActivity {
 
 	private void returnValuetoCaller() {
 
-		
 		Log.d(TAG, "Entered Return Value to Caller");
 		
 		Intent intent = new Intent();
@@ -356,52 +319,55 @@ public class PulseOxApplication extends BaseActivity {
 
 	
 	private class UDPSendTask extends AsyncTask<String, Integer, Long> {
+		DatagramSocket send;
 	     protected Long doInBackground(String... ips) {
-//	    	 UDPMulticast udp = new UDPMulticast(mContext, "224.3.29.71" , 10000);
+
 	    	 try{
-				 String messageStr=" type: \"request\", sdr:\"192.168.48.21\"  , rcv:\"192.168.17.72\" , port: 10002, mac:\"11:22:33:44:55:66\", time:1234 , argv:[{sensor:"+selected+",readings:5}]";
+				 String messageStr=" type: \"request\", sdr:\"192.168.48.21\"  , rcv:\"192.168.17.72\" , port: 10002, mac:\"11:22:33:44:55:66\", time:1234 , argv:[{sensor:\""+selectedSensor.getSensorName()+"\"}]";
 	    		 int server_port = 10000;
-	    		 DatagramSocket send = new DatagramSocket();
-	    		 
-	    		 DatabaseHelper db = new DatabaseHelper(mContext);
-	    		 List<NetworkDevice> device_list = db.getAllConnectedDevices();
+	    		 send = new DatagramSocket();
+
 //	    		 InetAddress local = InetAddress.getByName("192.168.43.123");
 	    		 
-	    		 for(NetworkDevice d: device_list){
-	    			 InetAddress local = InetAddress.getByName(d.getIpAddress());
+	    		 while(getReadings){
+
+					 InetAddress local = InetAddress.getByName(selectedDevice.getIpAddress());
 					 //TODO Remove
 //					 local = InetAddress.getByName("192.168.43.238");
 		    		 int msg_length=messageStr.length();
 		    		 byte[] message = messageStr.getBytes();
 		    		 DatagramPacket p = new DatagramPacket(message, msg_length,local,server_port);
 		    		 isConnected = true;
-		    		 for(int i =0;i<10;i++){
-		    			 send.send(p);
-		    		 }
-		    		 Log.d(TAG, "sending request");
-		    		 send.close();
+					 Log.d(TAG, "sending request :" + messageStr);
+					 send.send(p);
+
+					 int samplingFrequency = 1000;
+					 Thread.sleep(samplingFrequency);
+
 	    		 }
 	    	 }catch(Exception e){
-	    		 e.printStackTrace();
+				 send.close();
+				 e.printStackTrace();
 	    	 }
 
-//	    	 udp.sendMessage("discover");
 	    	 return 0L;
 	     }
 
-	     protected void onProgressUpdate(Integer... progress) {
+		@Override
+		protected void onPreExecute() {
+			super.onPreExecute();
+			probeConnectionButton.setEnabled(false);
+		}
+
+		protected void onProgressUpdate(Integer... progress) {
 //	         setProgressPercent(progress[0]);
 	     }
 
 	     protected void onPostExecute(Long result) {
 //	         showDialog("Downloaded " + result + " bytes");
-	    	 try {
-	    		
-				Thread.sleep(500);
-				
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
+			 Log.d(TAG,"Exiting UDP Send Thread");
+			 probeConnectionButton.setEnabled(true);
+			 send.close();
 	     }
 	 }
 
@@ -411,23 +377,21 @@ public class PulseOxApplication extends BaseActivity {
 //	    	 UDPMulticast udp = new UDPMulticast(mContext, "224.3.29.71" , 10000);
 	    	 
 	    	 try{
-	    		 while(true){
-	    			 if(!isConnected)
-	    				 continue;
+	    		 while(getReadings){
+
 		    		 String text;
 		    		 int server_port = 10002;
 		    		 byte[] message = new byte[1500];
 		    		 DatagramPacket p = new DatagramPacket(message, message.length);
 		    		 receive = new DatagramSocket(server_port);
 		    		 receive.setSoTimeout(3000);
-//		    		 receive.setReuseAddress(true);
 		    		 Log.d(TAG, "Waiting to Receive");
 		    		 receive.receive(p);
 		    		 text = new String(message, 0, p.getLength());
 		    		 Log.d(TAG,"message:" + text);
 	                 receive.close();
 	                 parseMessage(text);
-	                 
+	                 publishProgress(0);
 	    		 }
 	    	 }catch(Exception e){
 	    		 receive.close();
@@ -445,10 +409,14 @@ public class PulseOxApplication extends BaseActivity {
 
 	     protected void onProgressUpdate(Integer... progress) {
 //	         setProgressPercent(progress[0]);
+			 recordPulseOxButton.setEnabled(true);
+			 Log.d(TAG,"Time to update things ");
 	     }
 
-	     protected void onPostExecute(Long result) {	    	 
-	    	 	receive.close();
+	     protected void onPostExecute(Long result) {
+			 Log.d(TAG,"Exiting UDP Send Thread");
+			 receive.close();
+
 	    	 	for(Pair p : pulse_ox ){
 	    	 	int pulse = (int) p.getLeft();
 	    	 	int ox = (int) p.getRight();
@@ -497,12 +465,12 @@ public class PulseOxApplication extends BaseActivity {
 					mAnswerOx = ox;
 					//vibrator.vibrate(75);
 
-					Log.d(TAG, "Got new oxygen: " + ox);
+
 				}
-				dataPlot.redraw();
+//				dataPlot.redraw();
 				pulse_ox.remove(p);
 	      }
-	     }
+		 }
 	 }
 
 	private String parseMessage(String msg){
@@ -513,25 +481,31 @@ public class PulseOxApplication extends BaseActivity {
 			String packet_type = obj.getString("type");
 
 			if(packet_type.equalsIgnoreCase("request_reply")){
-				
+
+				//get argv array
 				JSONArray arr = obj.getJSONArray("argv");
-				
-				for (int i = 0; i < arr.length(); i++){
+
+				for (int i = 0; i < arr.length(); i++) {
+
 					Object c = arr.get(i);
 					JSONObject sens = new JSONObject(c.toString());
+					String sensorname = sens.getString("sensorname");
+					Log.d(TAG,"Sensor Name " + sensorname);
+
+					//get readings array
 					JSONArray points_arr = sens.getJSONArray("readings");
-					for(int j = 0 ; j < points_arr.length() ; j++){
+					for (int j = 0; j < points_arr.length(); j++) {
+						//get array of data points
 						JSONArray point_tuple = (JSONArray) points_arr.get(j);
-						Pair<Integer,Integer> p = new Pair(point_tuple.get(0),point_tuple.get(1));
-						pulse_ox.add(p);
+						Log.d(TAG,points_arr.get(j).toString());
+						for (int k = 0; k < point_tuple.length(); k++) {
+							//get individual points
+//							System.out.println(point_tuple.get(k));
+						}
 					}
-					
 				}
+			}
 
-
-
-				}	
-			
 
 		}catch(Exception e){
 			e.printStackTrace();
