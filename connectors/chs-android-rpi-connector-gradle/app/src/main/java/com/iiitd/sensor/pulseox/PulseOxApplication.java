@@ -5,6 +5,7 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -23,6 +24,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
@@ -39,6 +41,7 @@ import com.androidplot.xy.XYPlot;
 //import com.androidplot.xy.YLayoutStyle;
 import com.iiitd.navigationexample.R;
 import com.iiitd.networking.NetworkDevice;
+import com.iiitd.networking.Sensor;
 import com.iiitd.sqlite.helper.DatabaseHelper;
 import com.iiitd.sqlite.helper.Pair;
 
@@ -84,11 +87,23 @@ public class PulseOxApplication extends BaseActivity {
 	private XYPlot dataPlot;
 	private int dataPointCounter = 0;
 	public static String selected;
+
+	private String[] deviceSpinner = new String[] {"Add A Network Device First"};
+	private String[] sensorSpinner = new String[] {"Select Device First"};
+
+	private ArrayAdapter<Sensor> sensorAdapter = null;
+	private ArrayAdapter<NetworkDevice> deviceAdapter = null;
+
+	private NetworkDevice selectedDevice;
+	private Sensor selectedSensor;
+
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.pulseox_layout);
+
+		mContext = this;
 		pulseTxt = (TextView) findViewById(R.id.pulseReading);
 		oxTxt = (TextView) findViewById(R.id.oxygenReading);
 		statusTxt = (TextView) findViewById(R.id.probeStatus);
@@ -96,17 +111,31 @@ public class PulseOxApplication extends BaseActivity {
 		probeConnectionButton = (Button) findViewById (R.id.connect);
 		recordPulseOxButton = (Button) findViewById (R.id.record);
 
-		String[] arraySpinner = new String[] {
-				"nonin", "bp"
-		};
+		populateDeviceSpinners();
+
 		Spinner s = (Spinner) findViewById(R.id.sensor_spinner);
-		ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-				android.R.layout.simple_spinner_item, arraySpinner);
-		s.setAdapter(adapter);
+//		ArrayAdapter<String> sensorAdapter = new ArrayAdapter<String>(this,
+//				android.R.layout.simple_spinner_item, sensorSpinner);
+//		s.setAdapter(sensorAdapter);
+		s.setEnabled(false);
+
+		s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+				Log.d(TAG, "Sensor selected at position "+position);
+				selectedSensor = sensorAdapter.getItem(position);
+
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
 
 		recordPulseOxButton.setEnabled(false);
 	
-		mContext = this;
+
 		
  	    Widget domainLabelWidget = dataPlot.getDomainLabelWidget();
  		
@@ -146,7 +175,60 @@ public class PulseOxApplication extends BaseActivity {
 		
 		Log.d(TAG, "on create");
 	}
-	
+
+	private void populateDeviceSpinners() {
+
+		DatabaseHelper db = new DatabaseHelper(this);
+
+		final List<NetworkDevice> nd = db.getAllConnectedDevices();
+		Spinner d = (Spinner) findViewById(R.id.device_spinner);
+		if(nd.size() > 0) {
+
+
+			deviceAdapter = new ArrayAdapter<NetworkDevice>(this,
+					android.R.layout.simple_spinner_item, nd);
+			d.setAdapter(deviceAdapter);
+		}
+		else{
+
+			ArrayAdapter<String> deviceAdapter = new ArrayAdapter<String>(this,
+					android.R.layout.simple_spinner_item, deviceSpinner);
+			d.setAdapter(deviceAdapter);
+		}
+
+		d.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+			@Override
+			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+				Log.d(TAG, "Network Device selected on position " + position);
+				//get the device
+				NetworkDevice device = nd.get(0);
+				//get list of sensors on device
+				List<Sensor> sensors = device.getSensorList();
+				// populate sensor spinner
+				Spinner s = (Spinner) findViewById(R.id.sensor_spinner);
+				sensorAdapter = new ArrayAdapter<Sensor>(mContext,
+						android.R.layout.simple_spinner_item, sensors);
+				s.setAdapter(sensorAdapter);
+				//enable the spinner
+				s.setEnabled(true);
+
+
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> parent) {
+
+			}
+		});
+//		deviceSpinner = new String[nd.size()];
+//		int i = 0;
+//		for(NetworkDevice device : nd){
+//			deviceSpinner[i++] = device.toString();
+//		}
+
+	}
+
 	protected void onResume() {
 		super.onResume();
 		
@@ -246,112 +328,6 @@ public class PulseOxApplication extends BaseActivity {
 		}
 	}
 
-	private void processData() {
-
-		// ensure sensor has been connected
-		if (!isConnected) {
-			return;
-		}
-		runOnUiThread(new Runnable() {
-			public void run() {
-				try {
-
-					String text;
-					int server_port = 10002;
-					byte[] message = new byte[1500];
-					DatagramPacket dp = new DatagramPacket(message, message.length);
-					DatagramSocket receive = new DatagramSocket(server_port);
-					receive.receive(dp);
-					text = new String(message, 0, dp.getLength());
-					Log.d(TAG,"message:" + text);
-					receive.close();
-					parseMessage(text);
-
-
-					if (pulse_ox != null) {
-
-						for (Pair p : pulse_ox) {
-							try {
-								if (p.getLeft()!= null) {
-									//								//TODO figure out how to display device not connected
-									//								boolean connected = b.getBoolean(NoninPacket.CONNECTED);
-									//								
-									//								if (!connected) {
-									//									pulseTxt.setText(DEVICE_NOT_CONNECTED);
-									//									oxTxt.setText(DEVICE_NOT_CONNECTED);
-									//									statusTxt.setText(DEVICE_NOT_CONNECTED);
-									//									continue;
-									//								}
-								}
-								if (true) {
-									int pulse = (int) p.getLeft();
-									if(pulse == 511) {
-										pulseTxt.setText("Error");
-										Toast toast = Toast.makeText(mContext, "error 511", Toast.LENGTH_SHORT);
-										toast.show();
-									} else {
-										pulseTxt.setText(Integer.toString(pulse));
-
-									}
-									bPulse = true;
-									mAnswerPulse = pulse;
-
-									Log.d(TAG, "Got new pulse: " + pulse);
-								}
-								if (true) {
-									int ox = (int) p.getRight();
-									if(ox == 127) {
-										mAnswerOx = -1;
-										oxTxt.setText("Error");
-										Toast toast = Toast.makeText(mContext, "error 127", Toast.LENGTH_SHORT);
-										toast.show();
-									} else {
-										mAnswerOx = 99;
-										oxTxt.setText("99");
-										oxTxt.setText(Integer.toString(ox));
-									}
-									bOx = true;								
-									mAnswerOx = ox;
-
-									Log.d(TAG, "Got new oxygen: " + ox);
-								}
-
-								if (true) {
-									int[] pleths;
-									for (int i = 0; i < pulse_ox.size(); i++) {
-										plenthSeries.addLast(dataPointCounter,
-												(int)pulse_ox.poll().getRight());
-										dataPointCounter++;
-
-										if (dataPointCounter > MAX_DATAPOINTS) {
-											plenthSeries.removeFirst();
-										}
-									}
-									dataPlot.redraw();
-
-									//returnValuetoCaller();
-								}
-								
-							}catch(RuntimeException e){
-								
-							}
-
-						
-						}
-
-					}
-					
-				}	catch (IOException e) {
-					// TODO Auto-generated catch block
-					Log.d(TAG, "Entered Async Task Catch Exception");
-					System.out.println("caught exception");
-					e.printStackTrace();
-				}
-				}
-
-			
-		});
-	}
 
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {

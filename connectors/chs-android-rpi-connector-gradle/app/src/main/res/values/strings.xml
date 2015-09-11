@@ -17,12 +17,12 @@
     <string name="demographic_form">Registration Form</string>
     <string name="patientname">Name</string>
     <string name="pick_date">Date</string>
-    <string name="title_activity_registration">RegistrationActivity</string>
+    <string name="title_activity_registration">New Patient</string>
     <string name="patientdob">Date of Birth</string>
     <string name="addObs">Add Observations</string>
     <string name="male">Male</string>
     <string name="female">Female</string>
-    <string name="title_activity_observation">ObservationActivity</string>
+    <string name="title_activity_observation">Patient Observations</string>
     <string name="hello_world">Hello world!</string>
 
     <!-- Observation Form -->
@@ -47,6 +47,7 @@
     <string name="title_activity_patient">Patient History</string>
     <string name="title_activity_sensor">SensorActivity</string>
     <string name="title_activity_add_device">Device Details</string>
+    <string name="Select_Device">Select Device</string>
     
     <string name="add_device">Add Device</string>
     <string name="title_activity_patient_history">Encounter Details</string>

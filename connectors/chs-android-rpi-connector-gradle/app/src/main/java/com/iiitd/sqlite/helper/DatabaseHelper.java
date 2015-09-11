@@ -285,9 +285,40 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         
         return 0L;
     }
-        
-    
-    
+
+
+    public Sensor getSensorByName(String sensorName){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT  * FROM " + TABLE_SENSORS + " WHERE "
+                + KEY_SENSORNAME + " = " + "'" + sensorName + "'";
+        Log.d(LOG, selectQuery);
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+            c.moveToFirst();
+        if(c.getCount() == 0)
+            return null;
+
+
+        int id  = c.getInt((c.getColumnIndex(KEY_ID)));
+        String name = c.getString(c.getColumnIndex(KEY_SENSORNAME));
+        int readingCount = c.getInt(c.getColumnIndex(KEY_SENSOR_READING_COUNT));
+        String sensorType = c.getString(c.getColumnIndex(KEY_SENSORTYPE));
+        String created = c.getString(c.getColumnIndex(KEY_CREATED_AT));
+
+        Sensor sensor = new Sensor();
+        sensor.setReadingCount(readingCount);
+        sensor.setDatetime(created);
+        sensor.setId(id);
+        sensor.setSensorType(sensorType);
+
+        return sensor;
+
+    }
+
+
     /**
      * 
      * @param notification
@@ -474,15 +505,6 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     	return null;
     }
-
-
-    public Sensor getSensorByName(String name){
-
-    	//TODO implement get sensorby Name
-
-    	return null;
-    }
-    
     
     /**
      * get datetime

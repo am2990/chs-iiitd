@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,8 +24,10 @@ import com.iiitd.sqlite.model.PatientObservation;
 @SuppressWarnings("deprecation")
 public class ObservationActivity extends ActionBarActivity {
 
+	public static final String Tag = "ObservationActivity";
+
 	private CharSequence mTitle;
-	
+
 	private EditText etTemperature, etAllergies;
 	private TextView pulseTxt, oxTxt;
 	
@@ -72,9 +75,7 @@ public class ObservationActivity extends ActionBarActivity {
 	
 	public void addSensor(View v){
 
-		System.out.println("Clicked Add Pulse Ox");
-
-		
+		Log.v(Tag,"Add Sensor Pressed");
 
 		Intent intent = new Intent(this, PulseOxApplication.class);
 		startActivityForResult(intent, PULSEOX_VALUE_REQUEST);
@@ -130,8 +131,8 @@ public class ObservationActivity extends ActionBarActivity {
 	        	pulseTxt.setText(Integer.toString(pulse));
 	        	oxTxt.setText(Integer.toString(ox));
 	        	
-	        	Toast toast2 = Toast.makeText(this, "oxygen :"+ox+"pulse: "+pulse, Toast.LENGTH_LONG);
-	        	toast2.show();
+//	        	Toast toast2 = Toast.makeText(this, "oxygen :"+ox+"pulse: "+pulse, Toast.LENGTH_LONG);
+//	        	toast2.show();
 	        }
 	    }
 	}

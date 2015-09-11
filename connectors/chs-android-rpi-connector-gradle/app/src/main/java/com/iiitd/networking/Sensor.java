@@ -15,6 +15,7 @@ public class Sensor implements Serializable{
 	private SensorType sensorType;
 	private BlockingDeque<String> readings;
 	private int readingCount;
+	private String datetime;
 
 //	public Sensor(Integer id, String sensorName, SensorType sensorType){
 //		this.sensorId = id;
@@ -45,8 +46,8 @@ public class Sensor implements Serializable{
 		return this.sensorType;
 	}
 	
-	public void setSensorType(SensorType sType){
-		this.sensorType = sType;
+	public void setSensorType(String sType){
+		this.sensorType = SensorType.valueOf(sType);;
 	}
 	
 	public void setReading(BlockingDeque<String> readings){
@@ -65,6 +66,14 @@ public class Sensor implements Serializable{
 
 	public int getReadingCount(){
 		return this.readingCount;
+	}
+
+	public void setDatetime(String datetime){
+		this.datetime = datetime;
+	}
+
+	public String getDatetime(){
+		return this.datetime;
 	}
 
 	public String toString(){

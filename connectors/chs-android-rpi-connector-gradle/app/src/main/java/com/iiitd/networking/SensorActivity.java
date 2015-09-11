@@ -225,7 +225,7 @@ public class SensorActivity extends ListActivity{
 					Sensor s = new Sensor();
 					s.setId(sensorid);
 					s.setSensorName(sensorname);
-					s.setSensorType(SensorType.MEDICAL);
+					s.setSensorType(SensorType.MEDICAL.toString());
 					s.setReadingCount(sensorreadings);
 					sensorList.add(s);
 
