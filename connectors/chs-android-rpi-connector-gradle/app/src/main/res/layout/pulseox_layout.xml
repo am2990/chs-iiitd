@@ -97,14 +97,6 @@
                 android:text="@string/status_label"
                 android:textSize="16sp" />
 
-            <TextView
-                android:id="@+id/probeStatus"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:drawablePadding="20sp"
-                android:gravity="center_horizontal"
-                android:text="@string/status_default"
-                android:textSize="16sp" />
         </TableRow>
     </TableLayout>
 
@@ -130,7 +122,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
-            title="Pulse" />
+            androidPlot.title="A Simple XYPlot Example" />
     </LinearLayout>
 
 </LinearLayout>

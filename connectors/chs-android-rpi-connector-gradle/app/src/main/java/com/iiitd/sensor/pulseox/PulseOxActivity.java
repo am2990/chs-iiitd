@@ -72,7 +72,7 @@ public class PulseOxActivity extends BaseActivity{
 			setContentView(R.layout.pulseox_layout);
 			pulseTxt = (TextView) findViewById(R.id.pulseReading);
 			oxTxt = (TextView) findViewById(R.id.oxygenReading);
-			statusTxt = (TextView) findViewById(R.id.probeStatus);
+
 			dataPlot = (XYPlot) findViewById (R.id.dataPlot);
 			probeConnectionButton = (Button) findViewById (R.id.connect);
 			recordPulseOxButton = (Button) findViewById (R.id.record);

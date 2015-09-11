@@ -5,6 +5,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.BlockingQueue;
@@ -24,6 +26,7 @@ import android.graphics.Color;
 import android.media.MediaPlayer;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.UserManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -38,10 +41,12 @@ import com.androidplot.ui.AnchorPosition;
 import com.androidplot.ui.widget.Widget;
 import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.PointLabelFormatter;
 import com.androidplot.xy.SimpleXYSeries;
 //import com.androidplot.xy.XLayoutStyle;
 import com.androidplot.xy.XYPlot;
 //import com.androidplot.xy.YLayoutStyle;
+import com.androidplot.xy.XYSeries;
 import com.iiitd.navigationexample.R;
 import com.iiitd.networking.NetworkDevice;
 import com.iiitd.networking.Sensor;
@@ -69,7 +74,6 @@ public class PulseOxApplication extends Activity{
 	
 	private TextView pulseTxt;
 	private TextView oxTxt;
-	private TextView statusTxt;
 	
 	private Integer mAnswerOx;
 	private Integer mAnswerPulse;
@@ -77,8 +81,7 @@ public class PulseOxApplication extends Activity{
 	private UDPSendTask send = null;;
 	private AsyncTask<URL, Integer, Long> recv = null;
 	private BlockingQueue<Pair> pulse_ox = new LinkedBlockingQueue<Pair>();
-	
-	private boolean isConnected;
+
 	private boolean getReadings;
 	
 	private Context mContext;
@@ -104,6 +107,9 @@ public class PulseOxApplication extends Activity{
 	AsyncTask udpSend;
 	AsyncTask udpReceive;
 
+	List<Integer> series1 = new ArrayList<>();
+	List<Integer> series2 = new ArrayList<>();
+	List<Integer> series3 = new ArrayList<>();
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -113,25 +119,22 @@ public class PulseOxApplication extends Activity{
 		mContext = this;
 		pulseTxt = (TextView) findViewById(R.id.pulseReading);
 		oxTxt = (TextView) findViewById(R.id.oxygenReading);
-		statusTxt = (TextView) findViewById(R.id.probeStatus);
 		dataPlot = (XYPlot) findViewById (R.id.dataPlot);
 		probeConnectionButton = (Button) findViewById (R.id.connect);
 		recordPulseOxButton = (Button) findViewById (R.id.record);
 
 		probeConnectionButton.setEnabled(false);
 
+
 		populateDeviceSpinners();
 
 		Spinner s = (Spinner) findViewById(R.id.sensor_spinner);
-//		ArrayAdapter<String> sensorAdapter = new ArrayAdapter<String>(this,
-//				android.R.layout.simple_spinner_item, sensorSpinner);
-//		s.setAdapter(sensorAdapter);
 		s.setEnabled(false);
 
 		s.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 			@Override
 			public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-				Log.d(TAG, "Sensor selected at position "+position);
+				Log.d(TAG, "Sensor selected at position " + position);
 				selectedSensor = sensorAdapter.getItem(position);
 				probeConnectionButton.setEnabled(true);
 			}
@@ -143,17 +146,7 @@ public class PulseOxApplication extends Activity{
 		});
 
 		recordPulseOxButton.setEnabled(false);
-	
 
-		
- 	    Widget domainLabelWidget = dataPlot.getDomainLabelWidget();
- 		
-//        dataPlot.position(domainLabelWidget,                     // the widget to position
-//                                 0,                                    // x position value
-//                                 XLayoutStyle.ABSOLUTE_FROM_LEFT,       // how the x position value is applied, in this case from the left
-//                                 0,                                     // y position value
-//                                 YLayoutStyle.ABSOLUTE_FROM_BOTTOM,     // how the y position is applied, in this case from the bottom
-//                                 AnchorPosition.LEFT_BOTTOM);           // point to use as the origin of the widget being positioned
 
         dataPlot.setRangeBoundaries(0, 255, BoundaryMode.AUTO);
         // get rid of the visual aids for positioning:
@@ -174,12 +167,43 @@ public class PulseOxApplication extends Activity{
 			}
 		}
 
-		isConnected = true;
+		// Create a couple arrays of y-values to plot:
+		Number[] series1Numbers = {1, 8, 5, 2, 7, 4};
+		Number[] series2Numbers = {4, 6, 3, 8, 2, 10};
+
+		// Turn the above arrays into XYSeries':
+		XYSeries series1 = new SimpleXYSeries(
+				Arrays.asList(series1Numbers),          // SimpleXYSeries takes a List so turn our array into a List
+				SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, // Y_VALS_ONLY means use the element index as the x value
+				"Series1");                             // Set the display title of the series
+
+		// same as above
+		XYSeries series2 = new SimpleXYSeries(Arrays.asList(series2Numbers), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Series2");
+
+		// Create a formatter to use for drawing a series using LineAndPointRenderer:
+		LineAndPointFormatter series1Format = new LineAndPointFormatter(
+				Color.rgb(0, 200, 0),                   // line color
+				Color.rgb(0, 100, 0),                   // point color
+				null,                                   // fill color (none)
+				new PointLabelFormatter(Color.WHITE));                           // text color
+
+		// add a new series' to the xyplot:
+		dataPlot.addSeries(series1, series1Format);
+
+		// same as above:
+		dataPlot.addSeries(series2,
+				new LineAndPointFormatter(
+						Color.rgb(0, 0, 200),
+						Color.rgb(0, 0, 100),
+						null,
+						new PointLabelFormatter(Color.WHITE)));
+
+		// reduce the number of range labels
+		dataPlot.setTicksPerRangeLabel(3);
+
 		mAnswerOx = 0;
 		mAnswerPulse = 0;
-//		
-//		UDPReceiveTask udpReceive = new UDPReceiveTask();
-//		udpReceive.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
 		Log.d(TAG, "on create");
 	}
 
@@ -245,6 +269,12 @@ public class PulseOxApplication extends Activity{
 	@Override
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy");
+
+		if(udpReceive.getStatus() == AsyncTask.Status.RUNNING)
+			udpReceive.cancel(true);
+		if(udpSend.getStatus() == AsyncTask.Status.RUNNING)
+			udpSend.cancel(true);
+
 		super.onDestroy();
 	}
 
@@ -253,6 +283,11 @@ public class PulseOxApplication extends Activity{
 		Spinner spinner = (Spinner)findViewById(R.id.sensor_spinner);
 		this.selected = spinner.getSelectedItem().toString();
 		pulseOxId = "yes";
+
+		series1 = new ArrayList<>();
+		series2 = new ArrayList<>();
+		series3 = new ArrayList<>();
+
 		getSensorReadings();
 
 	}
@@ -283,7 +318,6 @@ public class PulseOxApplication extends Activity{
 	
 	private void getSensorReadings() {
 
-		isConnected = true;
 		getReadings = true;
 		while(true) {
 			udpSend = new UDPSendTask().executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -331,13 +365,14 @@ public class PulseOxApplication extends Activity{
 	    		 
 	    		 while(getReadings){
 
+//					 if(udpSend.isCancelled())
+//						 break;
 					 InetAddress local = InetAddress.getByName(selectedDevice.getIpAddress());
 					 //TODO Remove
 //					 local = InetAddress.getByName("192.168.43.238");
 		    		 int msg_length=messageStr.length();
 		    		 byte[] message = messageStr.getBytes();
 		    		 DatagramPacket p = new DatagramPacket(message, msg_length,local,server_port);
-		    		 isConnected = true;
 					 Log.d(TAG, "sending request :" + messageStr);
 					 send.send(p);
 
@@ -347,6 +382,8 @@ public class PulseOxApplication extends Activity{
 	    		 }
 	    	 }catch(Exception e){
 				 send.close();
+				 //TODO if socket timeout occurs but getReadings is active this means device is not online
+				 //Promppt the user and close the UDPSend
 				 e.printStackTrace();
 	    	 }
 
@@ -378,7 +415,8 @@ public class PulseOxApplication extends Activity{
 	    	 
 	    	 try{
 	    		 while(getReadings){
-
+//					 if(udpReceive.isCancelled())
+//						 break;
 		    		 String text;
 		    		 int server_port = 10002;
 		    		 byte[] message = new byte[1500];
@@ -404,13 +442,14 @@ public class PulseOxApplication extends Activity{
 	     
 	     @Override
 	     protected void onPreExecute() {
-	    	 isConnected = false;
+
 	     }
 
 	     protected void onProgressUpdate(Integer... progress) {
 //	         setProgressPercent(progress[0]);
 			 recordPulseOxButton.setEnabled(true);
 			 Log.d(TAG,"Time to update things ");
+
 	     }
 
 	     protected void onPostExecute(Long result) {
@@ -423,8 +462,7 @@ public class PulseOxApplication extends Activity{
 	    	 	
 	    	 	pulseTxt.setTextColor(PULSE_COLOR);
 				oxTxt.setTextColor(Color.BLUE);
-				statusTxt.setTextColor(Color.BLACK);
-				statusTxt.setText(DATA_GOOD);
+
 				recordPulseOxButton.setEnabled(true);
 				recordPulseOxButton.setTextColor(Color.BLUE);
 
@@ -498,10 +536,19 @@ public class PulseOxApplication extends Activity{
 						//get array of data points
 						JSONArray point_tuple = (JSONArray) points_arr.get(j);
 						Log.d(TAG,points_arr.get(j).toString());
-						for (int k = 0; k < point_tuple.length(); k++) {
+//						for (int k = 0; k < point_tuple.length(); k++) {
 							//get individual points
 //							System.out.println(point_tuple.get(k));
+						if(sensorname.equalsIgnoreCase("bp")){
+								series1.add(Integer.parseInt(point_tuple.get(0).toString()));
+								series2.add(Integer.parseInt(point_tuple.get(1).toString()));
+								series3.add(Integer.parseInt(point_tuple.get(2).toString()));
+							}
+						if(sensorname.equalsIgnoreCase("nonin")){
+							series1.add(Integer.parseInt(point_tuple.get(0).toString()));
+							series2.add(Integer.parseInt(point_tuple.get(1).toString()));
 						}
+//						}
 					}
 				}
 			}
