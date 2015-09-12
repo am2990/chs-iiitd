@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -74,6 +75,7 @@ public class PulseOxApplication extends Activity{
 	
 	private TextView pulseTxt;
 	private TextView oxTxt;
+	private TextView series3Reading;
 	
 	private Integer mAnswerOx;
 	private Integer mAnswerPulse;
@@ -119,6 +121,8 @@ public class PulseOxApplication extends Activity{
 		mContext = this;
 		pulseTxt = (TextView) findViewById(R.id.pulseReading);
 		oxTxt = (TextView) findViewById(R.id.oxygenReading);
+		series3Reading = (TextView) findViewById(R.id.series3Reading);
+
 		dataPlot = (XYPlot) findViewById (R.id.dataPlot);
 		probeConnectionButton = (Button) findViewById (R.id.connect);
 		recordPulseOxButton = (Button) findViewById (R.id.record);
@@ -153,9 +157,7 @@ public class PulseOxApplication extends Activity{
 //        dataPlot.disableAllMarkup();
 		dataPlot.setTicksPerRangeLabel(Integer.MAX_VALUE);
 		dataPlot.setTicksPerDomainLabel(Integer.MAX_VALUE);
-        
-		plenthSeries = new SimpleXYSeries("HeartWaveform");
-// 		dataPlot.addSeries(plenthSeries,new LineAndPointFormatter(Color.GREEN, Color.BLUE, null));
+
  		dataPointCounter = 0;
  		
 		// restore stored preferences if any
@@ -167,42 +169,6 @@ public class PulseOxApplication extends Activity{
 			}
 		}
 
-		// Create a couple arrays of y-values to plot:
-		Number[] series1Numbers = {1, 8, 5, 2, 7, 4};
-		Number[] series2Numbers = {4, 6, 3, 8, 2, 10};
-
-		// Turn the above arrays into XYSeries':
-		XYSeries series1 = new SimpleXYSeries(
-				Arrays.asList(series1Numbers),          // SimpleXYSeries takes a List so turn our array into a List
-				SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, // Y_VALS_ONLY means use the element index as the x value
-				"Series1");                             // Set the display title of the series
-
-		// same as above
-		XYSeries series2 = new SimpleXYSeries(Arrays.asList(series2Numbers), SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "Series2");
-
-		// Create a formatter to use for drawing a series using LineAndPointRenderer:
-		LineAndPointFormatter series1Format = new LineAndPointFormatter(
-				Color.rgb(0, 200, 0),                   // line color
-				Color.rgb(0, 100, 0),                   // point color
-				null,                                   // fill color (none)
-				new PointLabelFormatter(Color.WHITE));                           // text color
-
-		// add a new series' to the xyplot:
-		dataPlot.addSeries(series1, series1Format);
-
-		// same as above:
-		dataPlot.addSeries(series2,
-				new LineAndPointFormatter(
-						Color.rgb(0, 0, 200),
-						Color.rgb(0, 0, 100),
-						null,
-						new PointLabelFormatter(Color.WHITE)));
-
-		// reduce the number of range labels
-		dataPlot.setTicksPerRangeLabel(3);
-
-		mAnswerOx = 0;
-		mAnswerPulse = 0;
 
 		Log.d(TAG, "on create");
 	}
@@ -270,9 +236,9 @@ public class PulseOxApplication extends Activity{
 	public void onDestroy() {
 		Log.d(TAG, "onDestroy");
 
-		if(udpReceive.getStatus() == AsyncTask.Status.RUNNING)
+		if(udpReceive != null && (udpReceive.getStatus() == AsyncTask.Status.RUNNING))
 			udpReceive.cancel(true);
-		if(udpSend.getStatus() == AsyncTask.Status.RUNNING)
+		if(udpSend != null && (udpSend.getStatus() == AsyncTask.Status.RUNNING))
 			udpSend.cancel(true);
 
 		super.onDestroy();
@@ -298,10 +264,10 @@ public class PulseOxApplication extends Activity{
 //		if(udpSend.isCancelled() && udpReceive.isCancelled()){
 			new AlertDialog.Builder(this)
 					.setTitle("Save Values")
-					.setMessage("Are you sure you want to save this entry?")
+					.setMessage("Are you sure you want to save the results ?")
 					.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
-							// continue with delete
+							returnValuetoCaller();
 						}
 					})
 					.setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
@@ -342,11 +308,14 @@ public class PulseOxApplication extends Activity{
 
 	private void returnValuetoCaller() {
 
-		Log.d(TAG, "Entered Return Value to Caller");
-		
 		Intent intent = new Intent();
-		intent.putExtra(NoninPacket.OX, mAnswerOx);
-		intent.putExtra(NoninPacket.PULSE, mAnswerPulse);
+		//TODO push back to be dynamic
+		// possible way get send the sensor through a fixed field then the number of values are dependent on the sensor type and will be dynamic
+		intent.putExtra("Sensor", selectedSensor.getSensorName());
+		intent.putExtra("Reading1", series1.get(series1.size()-1));
+		intent.putExtra("Reading2", series2.get(series2.size()-1));
+		if(selectedSensor.getSensorName().equalsIgnoreCase("bp"))
+			intent.putExtra("Reading3", series3.get(series3.size()-1));
 		setResult(RESULT_OK, intent);
 		finish();
 	}
@@ -382,8 +351,6 @@ public class PulseOxApplication extends Activity{
 	    		 }
 	    	 }catch(Exception e){
 				 send.close();
-				 //TODO if socket timeout occurs but getReadings is active this means device is not online
-				 //Promppt the user and close the UDPSend
 				 e.printStackTrace();
 	    	 }
 
@@ -409,7 +376,8 @@ public class PulseOxApplication extends Activity{
 	 }
 
 	private class UDPReceiveTask extends AsyncTask<URL, Integer, Long> {
-		DatagramSocket receive = null; 
+		DatagramSocket receive = null;
+		private int exception = 0;
 		protected Long doInBackground(URL... urls) {
 //	    	 UDPMulticast udp = new UDPMulticast(mContext, "224.3.29.71" , 10000);
 	    	 
@@ -431,10 +399,16 @@ public class PulseOxApplication extends Activity{
 	                 parseMessage(text);
 	                 publishProgress(0);
 	    		 }
-	    	 }catch(Exception e){
+	    	 }catch(SocketTimeoutException e){
 	    		 receive.close();
-	    		 e.printStackTrace();
+				 //TODO if socket timeout occurs but getReadings is active this means device is not online
+				 //Promppt the user and close the UDPSend
+				 exception = 1;
 	    	 }
+			catch(Exception e){
+				receive.close();
+				e.printStackTrace();
+			}
 
 
 	    	 return 0L;
@@ -449,65 +423,111 @@ public class PulseOxApplication extends Activity{
 //	         setProgressPercent(progress[0]);
 			 recordPulseOxButton.setEnabled(true);
 			 Log.d(TAG,"Time to update things ");
+			 //update the text views
+			 int sensor1_current = series1.get(series1.size()-1);
+			 int sensor2_current = series2.get(series2.size()-1);
 
-	     }
+			 if (sensor1_current > 0) {
+				 //
+				 switch (sensor1_current) {
+					 case 1:
+						 pulseTxt.setText("Sensor Offline");
+					 case 511:
+						 pulseTxt.setText("Error");
+					 default:
+						 pulseTxt.setText(Integer.toString(sensor1_current));
+				 }
+
+			 }
+			 if (sensor2_current > 0) {
+
+				 switch (sensor2_current) {
+					 case 1:
+						 oxTxt.setText("Sensor Offline");
+					 case 127:
+						 oxTxt.setText("Error");
+					 default:
+						 oxTxt.setText(Integer.toString(sensor2_current));
+				 }
+			 }
+
+			 if(selectedSensor.getSensorName().equalsIgnoreCase("bp")){
+				 int sensor3_current = series3.get(series3.size()-1);
+				 if (sensor3_current > 0) {
+
+					 switch (sensor3_current) {
+						 case 1:
+							 series3Reading.setText("Sensor Offline");
+						 case 127:
+							 series3Reading.setText("Error");
+						 default:
+							 series3Reading.setText(Integer.toString(sensor3_current));
+					 }
+				 }
+			 }
+
+			 //TODO from static XYSeries Plot move to Dynamic Plot updated regularly
+//			 dataPlot.redraw();
+
+		 }
 
 	     protected void onPostExecute(Long result) {
-			 Log.d(TAG,"Exiting UDP Send Thread");
+			 Log.d(TAG, "Exiting UDP Receiver Thread");
 			 receive.close();
 
-	    	 	for(Pair p : pulse_ox ){
-	    	 	int pulse = (int) p.getLeft();
-	    	 	int ox = (int) p.getRight();
-	    	 	
-	    	 	pulseTxt.setTextColor(PULSE_COLOR);
-				oxTxt.setTextColor(Color.BLUE);
+			 if(getReadings && udpSend != null && exception == 1){
+				 Toast.makeText(mContext,"Device Not Responding !!!",Toast.LENGTH_LONG).show();
+				 udpSend.cancel(true);
+				 probeConnectionButton.setEnabled(true);
+				 return;
+			 }
+			 //depending on the type of sensor update the plot
+			 // Turn the above arrays into XYSeries':
+			 XYSeries series_one = new SimpleXYSeries(
+					 series1,          // SimpleXYSeries takes a List so turn our array into a List
+					 SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, // Y_VALS_ONLY means use the element index as the x value
+					 "Series1");                             // Set the display title of the series
 
-				recordPulseOxButton.setEnabled(true);
-				recordPulseOxButton.setTextColor(Color.BLUE);
+			 // same as above
+			 XYSeries series_two = new SimpleXYSeries(
+					 series2,
+					 SimpleXYSeries.ArrayFormat.Y_VALS_ONLY,
+					 "Series2");
 
-				if (playBeep) {
-					MediaPlayer mediaPlayer = MediaPlayer.create(
-							PulseOxApplication.this, R.raw.beep);
-					mediaPlayer.start();
-					playBeep = false;
+			 // Create a formatter to use for drawing a series using LineAndPointRenderer:
+			 LineAndPointFormatter series1Format = new LineAndPointFormatter(
+					 Color.rgb(0, 200, 0),                   // line color
+					 Color.rgb(0, 100, 0),                   // point color
+					 null,                                   // fill color (none)
+					 new PointLabelFormatter(Color.WHITE));                           // text color
 
-				}
+			 // add a new series' to the xyplot:
+			 dataPlot.addSeries(series_one, series1Format);
 
-				if (pulse > 0) {
-					//						pulse = b.getInt(NoninPacket.PULSE);
-					if(pulse == 511) {
-						pulseTxt.setText("Error");
+			 // same as above:
+			 dataPlot.addSeries(series_two,
+					 new LineAndPointFormatter(
+							 Color.rgb(0, 0, 200),
+							 Color.rgb(0, 0, 100),
+							 null,
+							 new PointLabelFormatter(Color.WHITE)));
 
-					} else {
-						pulseTxt.setText(Integer.toString(pulse));
+			 if(selectedSensor.getSensorName().equalsIgnoreCase("bp")){
+				 LineAndPointFormatter series3Format = new LineAndPointFormatter(
+						 Color.rgb(251, 255, 118),                   // line color
+						 Color.rgb(100, 0, 0),                   // point color
+						 null,                                   // fill color (none)
+						 new PointLabelFormatter(Color.WHITE));                           // text color
 
-					}
-					bPulse = true;
-					mAnswerPulse = pulse;
-
-					Log.d(TAG, "Got new pulse: " + pulse);
-				}
-				if (ox > 0) {
-					//						int ox = b.getInt(NoninPacket.OX);
-					if(ox == 127) {
-						mAnswerOx = -1;
-						oxTxt.setText("Error");
-
-					} else {
-						mAnswerOx = 99;
-						oxTxt.setText("99");
-						oxTxt.setText(Integer.toString(ox));
-					}
-					bOx = true;								
-					mAnswerOx = ox;
-					//vibrator.vibrate(75);
-
-
-				}
-//				dataPlot.redraw();
-				pulse_ox.remove(p);
-	      }
+				 XYSeries series_three = new SimpleXYSeries(
+						 series3,
+						 SimpleXYSeries.ArrayFormat.Y_VALS_ONLY,
+						 "Series3");
+				 dataPlot.addSeries(series_three, series3Format);
+			 }
+			 // reduce the number of range labels
+			 dataPlot.setTicksPerRangeLabel(3);
+			 dataPlot.redraw();
 		 }
 	 }
 

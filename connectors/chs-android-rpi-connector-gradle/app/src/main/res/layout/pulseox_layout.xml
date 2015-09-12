@@ -82,22 +82,31 @@
                 android:textColor="#0000ff"
                 android:textSize="28sp" />
         </TableRow>
-
         <TableRow
             android:id="@+id/tableRow3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="5dip" >
+            android:padding="10sp" >
 
             <TextView
-                android:id="@+id/probeStatusLabel"
-                android:layout_width="fill_parent"
+                android:id="@+id/series3"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:drawablePadding="20sp"
-                android:text="@string/status_label"
-                android:textSize="16sp" />
+                android:text="@string/reading3"
+                android:textSize="28sp" />
 
+            <TextView
+                android:id="@+id/series3Reading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawablePadding="20sp"
+                android:gravity="center_horizontal"
+                android:text="@string/zero"
+                android:textColor="#0000ff"
+                android:textSize="28sp" />
         </TableRow>
+
     </TableLayout>
 
     <Button

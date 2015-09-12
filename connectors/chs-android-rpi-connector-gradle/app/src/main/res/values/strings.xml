@@ -42,6 +42,7 @@
     <string name="oxygen_label">Reading 2: </string>
     <string name="status_label">Probe Status</string>
     <string name="zero">0</string>
+    <string name="reading3">Reading 3: </string>
     <string name="status_default">Not Connected</string>
     <string name="record_button_txt">Press Here to Record Results</string>
     <string name="title_activity_patient">Patient History</string>
