@@ -10,13 +10,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.iiitd.chs.Constants;
 import com.iiitd.chs.MainActivity;
 import com.iiitd.navigationexample.R;
 import com.iiitd.networking.Sensor;
-import com.iiitd.sensor.pulseox.NoninPacket;
 import com.iiitd.sensor.pulseox.PulseOxApplication;
 import com.iiitd.sqlite.helper.DatabaseHelper;
 import com.iiitd.sqlite.model.Patient;
@@ -163,11 +161,13 @@ public class ObservationActivity extends ActionBarActivity {
 		Log.d(Tag,"Sending Message" + msg);
 		//AMQPImpl.addToPublish(msg);
 		MainActivity.amqpIntent.putExtra(Constants.AMQP_PUBLISH_MESSAGE, msg);
-//		startService(MainActivity.amqpIntent);
+		startService(MainActivity.amqpIntent);
 		//TODO Validate Form
 		
 		//TODO Save Form into SQLite Database
 
+		System.out.println("ADDING INFO TO DATABASE");
+//		Intent backToMainIntent=new Intent("com.hayes.android.MyService");
 		Intent backToMainIntent = new Intent(this, MainActivity.class);
 		startActivity(backToMainIntent);
 	}

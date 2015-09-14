@@ -1,9 +1,5 @@
 package com.iiitd.chs;
 
-import java.util.List;
-
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -18,10 +14,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.iiitd.form.ObservationActivity;
 import com.iiitd.navigationexample.R;
 import com.iiitd.sqlite.helper.DatabaseHelper;
 import com.iiitd.sqlite.model.Patient;
 import com.iiitd.sqlite.model.PatientObservation;
+
+import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class PatientActivity extends ActionBarActivity {
@@ -30,6 +29,8 @@ public class PatientActivity extends ActionBarActivity {
 	private static List<PatientObservation> obs;
 	private static Context mContext;
 	private static String[] obs_list;
+	Patient patient;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,7 +40,7 @@ public class PatientActivity extends ActionBarActivity {
 		Integer patient_id = i.getIntExtra(Patient.PATIENT_ID, 0);
 		
 		DatabaseHelper db = new DatabaseHelper(this);
-		Patient patient = db.getPatientById(patient_id);
+		patient = db.getPatientById(patient_id);
 		obs = db.getObsById(patient_id);
 		obs_list = new String[obs.size()];
 		int j = 0;
@@ -63,6 +64,14 @@ public class PatientActivity extends ActionBarActivity {
 		mContext = this;
 	}
 
+	public void addObservation(View v){
+
+		Intent intent=new Intent(this, ObservationActivity.class);
+		String[] vals = {patient.getUUID(), patient.getName(),  patient.getDob(), patient.getGender()};
+
+		intent.putExtra("PATIENT", vals);
+		startActivity(intent);
+	}
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		// Inflate the menu; this adds items to the action bar if it is present.

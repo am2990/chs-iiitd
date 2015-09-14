@@ -1,11 +1,5 @@
 package com.iiitd.amqp;
 
-import java.net.URISyntaxException;
-import java.security.KeyManagementException;
-import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.BlockingDeque;
-import java.util.concurrent.LinkedBlockingDeque;
-
 import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
@@ -24,6 +18,12 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.MessageProperties;
 import com.rabbitmq.client.QueueingConsumer;
 
+import java.net.URISyntaxException;
+import java.security.KeyManagementException;
+import java.security.NoSuchAlgorithmException;
+import java.util.concurrent.BlockingDeque;
+import java.util.concurrent.LinkedBlockingDeque;
+
 public class AMQPService extends IntentService{
 	
 	private  BlockingDeque<String> publishQueue ;
@@ -36,7 +36,7 @@ public class AMQPService extends IntentService{
 	
 	private static String TAG = "com.iiitd.amqp.AMQPService";
 
-	private boolean isRunning;
+	private static boolean isRunning;
 	private Context mContext;
 	
 	
@@ -84,6 +84,23 @@ public class AMQPService extends IntentService{
 	}
 
 	@Override
+	public int onStartCommand (Intent intent, int flags, int startId) {
+		Log.v(TAG, "AMQP onStartCommand");
+
+		String msg = intent.getStringExtra(Constants.AMQP_PUBLISH_MESSAGE);
+
+		if(msg == null)
+			return 0;
+		try {
+			Log.d(TAG,"[q] " + msg);
+			publishQueue.putLast(msg);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		return 1;
+	}
+
+	@Override
 	protected void onHandleIntent(Intent intent) {
 
 		Log.v(TAG, "AMQP on Handle Event");
@@ -109,6 +126,7 @@ public class AMQPService extends IntentService{
 			public void run() {
 				while(true) {
 					try {
+						isRunning=true;
 						Connection connection = factory.newConnection();
 						Channel ch = connection.createChannel();
 						ch.confirmSelect();
@@ -129,12 +147,14 @@ public class AMQPService extends IntentService{
 							}
 						}
 					} catch (InterruptedException e) {
+						isRunning=false;
 						break;
 					} catch (Exception e) {
 						Log.d("", "Connection broken: " + e.getMessage());
 						try {
 							Thread.sleep(5000); //sleep and then try again
 						} catch (InterruptedException e1) {
+							isRunning=false;
 							break;
 						}
 					}

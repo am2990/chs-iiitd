@@ -20,5 +20,15 @@
         android:layout_width="wrap_content"
         android:layout_below="@id/pt_name"
         android:id="@+id/fragment"/>
-    
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Add observation"
+        android:id="@+id/button"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentEnd="false"
+        android:onClick="addObservation"/>
+
 </RelativeLayout>
