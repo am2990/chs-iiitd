@@ -103,7 +103,7 @@
                 android:drawablePadding="20sp"
                 android:gravity="center_horizontal"
                 android:text="@string/zero"
-                android:textColor="#0000ff"
+                android:textColor="#FFFF00"
                 android:textSize="28sp" />
         </TableRow>
 
@@ -131,7 +131,7 @@
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
             android:layout_marginTop="10dp"
-            androidPlot.title="A Simple XYPlot Example" />
+            androidPlot.title="Sensor Plot " />
     </LinearLayout>
 
 </LinearLayout>

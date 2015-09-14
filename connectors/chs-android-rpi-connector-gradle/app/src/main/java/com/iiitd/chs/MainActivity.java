@@ -39,9 +39,14 @@ import com.iiitd.amqp.AMQPService;
 import com.iiitd.android.fab.FloatingActionButtonBasicFragment;
 import com.iiitd.navigationexample.NavigationDrawerFragment;
 import com.iiitd.navigationexample.R;
+import com.iiitd.networking.Sensor;
 import com.iiitd.sqlite.helper.DatabaseHelper;
 import com.iiitd.sqlite.model.Patient;
 import com.iiitd.sqlite.model.PatientObservation;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 
 @SuppressWarnings("deprecation")
@@ -188,7 +193,7 @@ public class MainActivity extends ActionBarActivity implements
 		}
 		
 		if (id == R.id.action_sync) {
-			//TODO use Sync adapter
+			//TODO use Sync adapter and sync only those patients which have not been synced
 //			AMQPImpl syncer = new AMQPImpl();
 			String msg = "UUID: e4a94948-3e77-4279-8b05-f898a2db94d9:test patient:08/25/15:Male:57:list of allergies:11:11";
 			
@@ -197,7 +202,42 @@ public class MainActivity extends ActionBarActivity implements
 			for(Patient p: p_list){
 				List<PatientObservation> obs_list = db.getObsById(p.getId());
 				for(PatientObservation obs: obs_list){
+					Sensor s = db.getSensorByObsId(obs.getId());
+
+					JSONObject obj = new JSONObject();
+					try {
+						obj.put("uuid", p.getUUID());
+						obj.put("name", p.getName());
+						obj.put("dob", p.getDob());
+						obj.put("gender", p.getGender());
+
+						JSONObject obs_j = new JSONObject();
+
+						obs_j.put("temperature", Double.parseDouble(obs.getTemperature()));
+						obs_j.put("allergies", obs.getAllergies());
+						obs_j.put("sensorname", s.getSensorName());
+						JSONArray sensor_readings = new JSONArray();
+
+						List<String> sensor_arr = s.getReadings();
+						sensor_readings.put(sensor_arr.get(0));
+						sensor_readings.put(sensor_arr.get(1));
+
+						if(s.getSensorName().equalsIgnoreCase("bp"))
+							sensor_readings.put(sensor_arr.get(3));
+						obs_j.put("sensor_readings", sensor_readings);
+
+						obj.put("obs", obs);
+
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+//					Log.d(Tag,"Publishing Json" + obj.toString());
+
 					msg = p.getUUID() +":"+p.getName()+":"+p.getDob()+":"+p.getGender()+":"+obs.getTemperature()+":"+obs.getAllergies()+":84:78";
+					msg = obj.toString();
+
 				}
 				amqpIntent.putExtra(Constants.AMQP_PUBLISH_MESSAGE, msg);
 				startService(MainActivity.amqpIntent);

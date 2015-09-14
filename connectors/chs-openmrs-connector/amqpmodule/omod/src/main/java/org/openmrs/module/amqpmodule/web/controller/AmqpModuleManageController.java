@@ -41,7 +41,7 @@ public class  AmqpModuleManageController {
 		
 		amqpService = Context.getService(AmqpService.class);
 		Subscriber sub = new Subscriber(new String[]{"hw_doc"});
-		sub.start();
+//		sub.start();
 		List<AmqpModule> patients =  amqpService.listPersons();
 //		AmqpModule amqp = new AmqpModule();
 //		amqp.setName("Hello World");

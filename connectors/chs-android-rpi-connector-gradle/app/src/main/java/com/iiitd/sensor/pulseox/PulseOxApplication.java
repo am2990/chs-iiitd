@@ -261,12 +261,20 @@ public class PulseOxApplication extends Activity{
 	public void recordButtonAction(View view) {
 		Log.d(TAG, "record button pressed");
 		getReadings = false;
-//		if(udpSend.isCancelled() && udpReceive.isCancelled()){
+
+		CharSequence text = recordPulseOxButton.getText();
+		if(text.toString().equalsIgnoreCase("Press Here to Record Results")){
+			Toast.makeText(mContext, "Closing Sensor Connections ...", Toast.LENGTH_SHORT);
+			recordPulseOxButton.setText("Save Values !!!");
+			recordPulseOxButton.setEnabled(false);
+			return;
+		}
 			new AlertDialog.Builder(this)
 					.setTitle("Save Values")
 					.setMessage("Are you sure you want to save the results ?")
 					.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
 						public void onClick(DialogInterface dialog, int which) {
+
 							returnValuetoCaller();
 						}
 					})
@@ -528,6 +536,7 @@ public class PulseOxApplication extends Activity{
 			 // reduce the number of range labels
 			 dataPlot.setTicksPerRangeLabel(3);
 			 dataPlot.redraw();
+			 recordPulseOxButton.setEnabled(true);
 		 }
 	 }
 

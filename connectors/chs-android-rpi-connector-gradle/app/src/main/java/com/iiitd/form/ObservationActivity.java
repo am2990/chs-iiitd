@@ -15,11 +15,19 @@ import android.widget.Toast;
 import com.iiitd.chs.Constants;
 import com.iiitd.chs.MainActivity;
 import com.iiitd.navigationexample.R;
+import com.iiitd.networking.Sensor;
 import com.iiitd.sensor.pulseox.NoninPacket;
 import com.iiitd.sensor.pulseox.PulseOxApplication;
 import com.iiitd.sqlite.helper.DatabaseHelper;
 import com.iiitd.sqlite.model.Patient;
 import com.iiitd.sqlite.model.PatientObservation;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class ObservationActivity extends ActionBarActivity {
@@ -29,11 +37,12 @@ public class ObservationActivity extends ActionBarActivity {
 	private CharSequence mTitle;
 
 	private EditText etTemperature, etAllergies;
-	private TextView pulseTxt, oxTxt;
-	
+	private TextView sensor1Txt, sensor2Txt, sensor3Txt;
+	String sensor = "default";
+
 	public static final int PULSEOX_VALUE_REQUEST = 1;
 	
-	int pulse = 0, ox = 0; 
+	Integer s1 = 0, s2 = 0 , s3 = 0;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -43,8 +52,9 @@ public class ObservationActivity extends ActionBarActivity {
 		mTitle = getTitle();
 		etAllergies = (EditText) findViewById(R.id.Allergies);
 		etTemperature = (EditText) findViewById(R.id.Temperature);
-		pulseTxt = (TextView) findViewById(R.id.obs_pulseReading);
-		oxTxt = (TextView) findViewById(R.id.obs_oxygenReading);
+		sensor1Txt = (TextView) findViewById(R.id.obs_pulseReading);
+		sensor2Txt = (TextView) findViewById(R.id.obs_oxygenReading);
+		sensor3Txt = (TextView) findViewById(R.id.obs_series3Reading);
 	}
 
 	@Override
@@ -83,10 +93,8 @@ public class ObservationActivity extends ActionBarActivity {
 	}
 	
 	public void saveObservation(View v){
-		
-		//TODO  get observation data from the Activity
+
 		Intent intent = getIntent();
-		
 //		Integer patient_id = intent.getIntExtra(Patient.PATIENT_ID,0);
 		String[] vals = intent.getStringArrayExtra("PATIENT");
 		String allergies = etAllergies.getText().toString();
@@ -97,16 +105,65 @@ public class ObservationActivity extends ActionBarActivity {
 		
 		int patient_id = (int) db.createPatient(new Patient(vals[0], vals[1], vals[2], vals[3]));
 		
-		db.addPatientObservation(new PatientObservation(patient_id, temperature, allergies));
+		int obs_id = (int)db.addPatientObservation(new PatientObservation(patient_id, temperature, allergies));
+
+		List<String> reading_list = new ArrayList<String>();
+		reading_list.add(s1.toString());
+		reading_list.add(s2.toString());
+
+		if(sensor.equalsIgnoreCase("bp"))
+			reading_list.add(s3.toString());
+
+		Sensor s = new Sensor();
+		s.setSensorName(sensor);
+		s.setReading(reading_list);
+		s.setObsId(obs_id);
+		s.setPatientId(patient_id);
+		int sensor_id = (int) db.addSensor(s);
+		//Create Json to send to hospitals
+		JSONObject obj = new JSONObject();
+		try {
+			obj.put("uuid", vals[0]);
+			obj.put("name", vals[1]);
+			obj.put("dob", vals[3]);
+			obj.put("gender", vals[2]);
+
+			JSONObject obs = new JSONObject();
+
+			obs.put("temperature", Double.parseDouble(temperature));
+			obs.put("allergies", allergies);
+			obs.put("sensorname", sensor);
+			JSONArray sensor_readings = new JSONArray();
+
+			sensor_readings.put(s1);
+			sensor_readings.put(s2);
+
+			if(sensor.equalsIgnoreCase("bp"))
+				sensor_readings.put(s3);
+			obs.put("sensor_readings", sensor_readings);
+
+			obj.put("obs", obs);
+
+		} catch (JSONException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		Log.d(Tag,"Publishing Json" + obj.toString());
+
+
+
 
 		String msg = "";
-		for(String s: vals){
-			msg += s + ":";
-		}
-		msg += temperature+":"+allergies+":"+pulse+":"+ox;
+//		for(String s: vals){
+//			msg += s + ":";
+//		}
+//		msg += temperature+":"+allergies+":"+s1+":"+s2;
+		msg = obj.toString();
+		Log.d(Tag,"Sending Message" + msg);
 		//AMQPImpl.addToPublish(msg);
 		MainActivity.amqpIntent.putExtra(Constants.AMQP_PUBLISH_MESSAGE, msg);
-		startService(MainActivity.amqpIntent);
+//		startService(MainActivity.amqpIntent);
 		//TODO Validate Form
 		
 		//TODO Save Form into SQLite Database
@@ -118,21 +175,26 @@ public class ObservationActivity extends ActionBarActivity {
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 	    // Check which request we're responding to
-    	Toast toast = Toast.makeText(this, "received the intent", Toast.LENGTH_LONG);
-    	toast.show();
+
 	    if (requestCode == PULSEOX_VALUE_REQUEST) {
 	        // Make sure the request was successful
 	        if (resultCode == RESULT_OK) {
 	            // The user picked a correct reading.
-	        	
-	        	ox = data.getIntExtra(NoninPacket.OX, 0);
-	        	pulse = data.getIntExtra(NoninPacket.PULSE, 0);
-	        	
-	        	pulseTxt.setText(Integer.toString(pulse));
-	        	oxTxt.setText(Integer.toString(ox));
-	        	
-//	        	Toast toast2 = Toast.makeText(this, "oxygen :"+ox+"pulse: "+pulse, Toast.LENGTH_LONG);
-//	        	toast2.show();
+
+				sensor = data.getStringExtra("Sensor");
+	        	s1 = data.getIntExtra("Reading1", 0);
+	        	s2 = data.getIntExtra("Reading2", 0);
+				sensor1Txt.setText(Integer.toString(s1));
+				sensor2Txt.setText(Integer.toString(s2));
+
+				if(sensor.equalsIgnoreCase("bp")) {
+					s3 = data.getIntExtra("Reading3", 0);
+					sensor3Txt.setText(Integer.toString(s3));
+				}
+				else{
+					sensor3Txt.setText("N/A");
+				}
+
 	        }
 	    }
 	}

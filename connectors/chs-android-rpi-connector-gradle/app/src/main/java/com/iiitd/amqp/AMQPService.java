@@ -112,13 +112,14 @@ public class AMQPService extends IntentService{
 						Connection connection = factory.newConnection();
 						Channel ch = connection.createChannel();
 						ch.confirmSelect();
-						ch.exchangeDeclare("chs", "direct", true);
+						ch.queueDeclare("hello.world.queue.android", true, false, false, null);
+//						ch.exchangeDeclare("chs", "direct", true);
 						while (true) {
 							String message = publishQueue.takeFirst();
 							try{
 //								ch.basicPublish("", topicname, null, message.getBytes());
-								
-								ch.basicPublish("chs", "hw_doc", MessageProperties.PERSISTENT_BASIC , message.getBytes());
+
+								ch.basicPublish("", "hello.world.queue.android", MessageProperties.PERSISTENT_BASIC , message.getBytes());
 								Log.d("ActivityHome", "[s] " + message);
 								ch.waitForConfirmsOrDie();
 							} catch (Exception e){

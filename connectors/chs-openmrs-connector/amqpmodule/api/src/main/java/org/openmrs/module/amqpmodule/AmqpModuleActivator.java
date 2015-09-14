@@ -17,6 +17,8 @@ package org.openmrs.module.amqpmodule;
 import org.apache.commons.logging.Log; 
 import org.apache.commons.logging.LogFactory;
 import org.openmrs.module.ModuleActivator;
+import org.openmrs.module.amqpmodule.utils.ConsumerConfiguration;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 /**
  * This class contains the logic that is run every time this module is either started or stopped.
@@ -51,6 +53,8 @@ public class AmqpModuleActivator implements ModuleActivator {
 	 */
 	public void started() {
 		log.info("Amqp Module Module started");
+		// Start AMQP Consumer With the Module
+		new AnnotationConfigApplicationContext(ConsumerConfiguration.class);
 	}
 	
 	/**
