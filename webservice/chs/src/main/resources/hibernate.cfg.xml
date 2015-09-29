@@ -4,6 +4,7 @@
     "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
  
 <hibernate-configuration>
+
     <session-factory>
     
     	<mapping package="com.chs.entity" />
@@ -13,6 +14,12 @@
         <mapping class="com.chs.entity.DissagregationDictionary"/>
         <mapping class="com.chs.entity.UsersTopic"/>
         <mapping class="com.chs.entity.PatientRecord"/>
+       
+      <mapping class="com.chs.entity.Settings"/>
+    
+        
         
     </session-factory>
+        
+    
 </hibernate-configuration>

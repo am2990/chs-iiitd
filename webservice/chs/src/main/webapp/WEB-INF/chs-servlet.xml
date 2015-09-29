@@ -20,7 +20,7 @@
     <context:component-scan base-package="com.chs.controller" />
   
   	<import resource="classpath:rabbitConfiguration.xml" />
-  
+  	<import resource="classpath:spring-security.xml" />
   
     <bean id="jspViewResolver"
         class="org.springframework.web.servlet.view.InternalResourceViewResolver">
@@ -82,6 +82,16 @@
     
     <bean id="patientDAO" class="com.chs.dao.impl.PatientDAOImpl"></bean>
     <bean id="patientService" class="com.chs.service.impl.PatientServiceImpl"></bean>
+    
+    
+    
+    
+    <bean id="settingsDao" class="com.chs.dao.impl.SettingsDaoImpl"></bean>
+    <bean id="settingsService" class="com.chs.service.impl.SettingsServiceImpl"></bean>
+    
+    
+    
+    
     
     <tx:annotation-driven transaction-manager="transactionManager"/>
     <bean id="transactionManager"

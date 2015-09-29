@@ -1,6 +1,9 @@
 package com.chs.controller;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -11,19 +14,24 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.chs.entity.ConceptDictionary;
+import com.chs.entity.Settings;
 import com.chs.entity.Topic;
 import com.chs.entity.UserEntity;
 import com.chs.entity.UsersTopic;
 import com.chs.service.ConceptService;
 import com.chs.service.DissagregationService;
 import com.chs.service.PublishService;
+import com.chs.service.SettingsService;
 import com.chs.service.TopicService;
 import com.chs.service.UserService;
 import com.chs.service.UsersTopicService;
@@ -39,6 +47,8 @@ public class DashboardController {
 	private PublishService publishService;
 	private UsersTopicService userTopicService; 
 	
+	
+	private SettingsService settingsService; //added 23sep for saving RabbitMQ settings to dbs
 	
 	@Autowired(required=true)
     @Qualifier(value="conceptService")
@@ -70,7 +80,18 @@ public class DashboardController {
         this.userTopicService = uts;
     }
 	
-    @RequestMapping(value = "/dashboard/newtopic", method = RequestMethod.GET)
+    
+	//added 23sep for saving RabbitMQ settings to dbs
+	@Autowired(required=true)
+    @Qualifier(value="settingsService")
+    public void setsettingsService(SettingsService ss)
+	{       this.settingsService = ss;
+    }
+	
+	
+	
+	
+	@RequestMapping(value = "/dashboard/newtopic", method = RequestMethod.GET)
     public String newTopic(ModelMap map)
     {
     	List<ConceptDictionary> cd = conceptService.getAllConcepts();
@@ -191,4 +212,20 @@ public class DashboardController {
     	
     }
 
+//added 24sep for rabbitmq settings
+    
+    @Autowired  
+    SettingsService dataService;    
+    Settings employee;
+    
+@RequestMapping(value = "/dashboard/settings", method = RequestMethod.GET)
+public String addSettings(ModelMap map)
+{ 
+ dataService.insertRow(employee);  
+  return "settings";
+}
+ 
+
+
+    
 }
