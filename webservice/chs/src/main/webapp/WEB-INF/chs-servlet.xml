@@ -89,6 +89,11 @@
     <bean id="settingsDao" class="com.chs.dao.impl.SettingsDaoImpl"></bean>
     <bean id="settingsService" class="com.chs.service.impl.SettingsServiceImpl"></bean>
     
+  
+    
+    <bean id="concept_nameDAO" class="com.chs.dao.impl.concept_nameDAOImpl" />  
+ 	<bean id="concept_nameService" class="com.chs.service.impl.concept_nameServiceImpl" />  
+    
     
     
     

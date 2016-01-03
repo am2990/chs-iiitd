@@ -15,7 +15,9 @@
         <mapping class="com.chs.entity.UsersTopic"/>
         <mapping class="com.chs.entity.PatientRecord"/>
        
-      <mapping class="com.chs.entity.Settings"/>
+       <mapping class="com.chs.entity.Settings"/>
+       <mapping class="com.chs.entity.Search"/>
+        <mapping class="com.chs.entity.concept_name"/>
     
         
         

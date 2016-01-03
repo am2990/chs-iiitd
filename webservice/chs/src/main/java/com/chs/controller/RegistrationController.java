@@ -25,10 +25,12 @@ import com.chs.entity.Settings;
 import com.chs.entity.Topic;
 import com.chs.entity.UserEntity;
 import com.chs.entity.UsersTopic;
+
 import com.chs.service.TopicService;
 import com.chs.service.UserService;
 import com.chs.service.UsersTopicService;
 import com.chs.service.SettingsService;
+
 
 import java.security.Principal;
 
@@ -297,4 +299,7 @@ public class RegistrationController
    return new ModelAndView("redirect:list");  
   }  
    
+
+  
+
 }

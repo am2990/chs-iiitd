@@ -5,65 +5,42 @@
 	http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
 	http://www.springframework.org/schema/security
 	http://www.springframework.org/schema/security/spring-security-3.2.xsd">
- 
-    <!-- enable use-expressions -->	
+    <!-- enable use-expressions -->
+	
 	<http auto-config="true" use-expressions="true">
-  
-  	<intercept-url pattern="/chs/edit_topic/" access="hasRole('ROLE_ADMIN')" />
-	<intercept-url pattern="/chs/editUserList/" access="hasRole('ROLE_ADMIN')" />
-	<intercept-url pattern="/chs/dashboard/newtopic" access="hasRole('ROLE_ADMIN')" />
+		
+	<intercept-url pattern="/admin**" access="hasRole('ROLE_ADMIN')" />
+	<intercept-url pattern="/settings**" access="hasRole('ROLE_ADMIN')" />
+	<intercept-url pattern="/dashboard/edit_topic**" access="hasRole('ROLE_ADMIN')" />
+	<intercept-url pattern="/dashboard/editUserList**" access="hasRole('ROLE_ADMIN')" />
+	<intercept-url pattern="/dashboard/newtopic**" access="hasRole('ROLE_ADMIN')" />
 	
-	<intercept-url pattern="/chs/settings**" access="hasRole('ROLE_ADMIN')" />
-	
-	<intercept-url pattern="/chs/admin**" access="hasRole('ROLE_ADMIN')" />
-	<intercept-url pattern="/user**" access="hasRole('ROLE_USER')" />  
- 
+	<!-- intercept-url pattern="/search**" access="hasRole('ROLE_USER')" />
+	<intercept-url pattern="/searchResult**" access="hasRole('ROLE_USER')" />
+	 -->
+		
 		<!-- access denied page -->
-		<access-denied-handler error-page="/chs/403" />
- 
+		<access-denied-handler error-page="/403" />
+		
 		<form-login 
 		    login-page="/login" 
-		     default-target-url="/dashboard"
-            always-use-default-target="false" 
-		 
-		  
-		  
-		    login-processing-url="/j_spring_security_check" 
+		    default-target-url="/dashboard" 
 			authentication-failure-url="/login?error" 
-
- 
-		
 			username-parameter="username"
 			password-parameter="password" />
-
 		<logout logout-success-url="/login?logout"  />
 		
 	</http>
 	
- <!-- 
- <authentication-manager>
-		<authentication-provider>
-		  <user-service>
-			<user name="user" password="1234" authorities="ROLE_USER" />
-			<user name="admin" password="1234" authorities="ROLE_ADMIN" />
-		  </user-service>
-		</authentication-provider>
-</authentication-manager>
--->	
-	
 	<!-- Select users and user_roles from database -->
-	 <authentication-manager>
+	<authentication-manager>
 	  <authentication-provider>
 		<jdbc-user-service data-source-ref="dataSource"
 		  users-by-username-query=
-		    "select username,password,enabled from my_users where username=?"
+		    "select username,password, enabled from my_users where username=?"
 		  authorities-by-username-query=
 		    "select username, role from users_roles1 where username =?  " />
 	  </authentication-provider>
-	</authentication-manager> 
-
-
-
-
+	</authentication-manager>
 
 </beans:beans>

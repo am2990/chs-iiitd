@@ -1,9 +1,7 @@
 package com.chs.controller;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -14,7 +12,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,11 +20,13 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.chs.dao.impl.concept_nameDAOImpl;
 import com.chs.entity.ConceptDictionary;
 import com.chs.entity.Settings;
 import com.chs.entity.Topic;
 import com.chs.entity.UserEntity;
 import com.chs.entity.UsersTopic;
+import com.chs.entity.concept_name;
 import com.chs.service.ConceptService;
 import com.chs.service.DissagregationService;
 import com.chs.service.PublishService;
@@ -35,10 +34,11 @@ import com.chs.service.SettingsService;
 import com.chs.service.TopicService;
 import com.chs.service.UserService;
 import com.chs.service.UsersTopicService;
+import com.chs.service.concept_nameService;
 
 @Controller
-public class DashboardController {
-
+public class DashboardController 
+{
 	@Autowired
     private UserService userManager;
 	private ConceptService conceptService;
@@ -47,8 +47,8 @@ public class DashboardController {
 	private PublishService publishService;
 	private UsersTopicService userTopicService; 
 	
-	
-	private SettingsService settingsService; //added 23sep for saving RabbitMQ settings to dbs
+	private SettingsService settingsService; //added for saving RabbitMQ settings to dbs
+	private concept_nameService concept_nameService;  //for search
 	
 	@Autowired(required=true)
     @Qualifier(value="conceptService")
@@ -81,16 +81,19 @@ public class DashboardController {
     }
 	
     
-	//added 23sep for saving RabbitMQ settings to dbs
+	//added for saving RabbitMQ settings to dbs
 	@Autowired(required=true)
     @Qualifier(value="settingsService")
     public void setsettingsService(SettingsService ss)
 	{       this.settingsService = ss;
     }
-	
-	
-	
-	
+	//for search 
+	@Autowired(required=true)
+    @Qualifier(value="concept_nameService")
+    public void setconcept_nameService(concept_nameService cs)
+	{       this.concept_nameService = cs;
+    }
+		
 	@RequestMapping(value = "/dashboard/newtopic", method = RequestMethod.GET)
     public String newTopic(ModelMap map)
     {
@@ -212,20 +215,60 @@ public class DashboardController {
     	
     }
 
-//added 24sep for rabbitmq settings
-    
+//added for saving rabbitmq settings to dbs
     @Autowired  
     SettingsService dataService;    
     Settings employee;
-    
 @RequestMapping(value = "/dashboard/settings", method = RequestMethod.GET)
 public String addSettings(ModelMap map)
 { 
  dataService.insertRow(employee);  
   return "settings";
 }
- 
+//for search 
+String name;
 
 
-    
+//@RequestMapping(value = "/search2", method = RequestMethod.POST)
+//public String search2(HttpServletRequest request,
+//@RequestParam(value="name", required=false) String name,ModelMap m)
+//{	
+//	System.out.println("value of name is :"+name);
+//	concept_nameService.myMethod(name);
+//System.out.println("value of name is :"+name);	
+//this.name=name;
+//return "search2";
+//}
+
+//
+//@RequestMapping(value = "/search2", method = RequestMethod.POST)
+//public ModelAndView search2(HttpServletRequest request,
+//@RequestParam(value="name", required=false) String name,ModelMap m)
+//{	
+//List<concept_name> searchResult=concept_nameService.myMethod(name);
+//this.name=name;
+//return new ModelAndView("search2");
+//return new ModelAndView("redirect:searchResult");
+//}
+
+
+
+@RequestMapping(value = "/search2", method = RequestMethod.POST)
+public void search2(HttpServletRequest request,@RequestParam(value="name", required=false) String name)
+{	
+List<concept_name> searchResult=concept_nameService.myMethod(name);
+this.name=name;
+}
+
+
+
+@RequestMapping("searchResult")  
+public ModelAndView viewResult(@ModelAttribute concept_name con)
+{System.out.println("in result from contr the name is = "+name); 
+List searchResult=concept_nameService.myMethod(name);
+ //concept_nameService.myMethod(name);  
+ return new ModelAndView( "searchResult","searchResult",searchResult);
+}  
+
+
 }
