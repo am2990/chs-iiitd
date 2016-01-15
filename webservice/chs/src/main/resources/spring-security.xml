@@ -15,9 +15,10 @@
 	<intercept-url pattern="/dashboard/editUserList**" access="hasRole('ROLE_ADMIN')" />
 	<intercept-url pattern="/dashboard/newtopic**" access="hasRole('ROLE_ADMIN')" />
 	
-	<!-- intercept-url pattern="/search**" access="hasRole('ROLE_USER')" />
+	<!--
+	intercept-url pattern="/search**" access="hasRole('ROLE_USER')" />
 	<intercept-url pattern="/searchResult**" access="hasRole('ROLE_USER')" />
-	 -->
+	-->
 		
 		<!-- access denied page -->
 		<access-denied-handler error-page="/403" />
