@@ -91,7 +91,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
 
     //TODO Add patient id to notification
     private static final String CREATE_TABLE_NOTIFICATIONS = "CREATE TABLE " + TABLE_NOTIFICATIONS
-    		+ "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_NOTIFICATION + " TEXT,"
+    		+ "(" + KEY_ID + " INTEGER PRIMARY KEY," + KEY_OBSERVATION_ID + " INTEGER,"+ KEY_NOTIFICATION + " TEXT,"
     		+  KEY_CREATED_AT + " DATETIME" + ")";
 
     
@@ -271,7 +271,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
      
         Gson gson = new Gson();
         
-        if(getSensorByName(sensor.getSensorName())==null){
+        if(sensor == null){
         
         ContentValues values = new ContentValues();
         values.put(KEY_SENSORNAME, sensor.getSensorName());
@@ -518,7 +518,7 @@ public class DatabaseHelper extends SQLiteOpenHelper{
     public List<PatientObservation> getObsById(int patient_id){
     	SQLiteDatabase db = this.getReadableDatabase();
     	String selectQuery = "SELECT  * FROM " + TABLE_OBS + " WHERE "
-                + KEY_ID + " = " + patient_id;
+                + KEY_PATIENTID + " = " + patient_id;
     	Log.d(LOG, selectQuery);
     	
     	Cursor c = db.rawQuery(selectQuery, null);

@@ -41,6 +41,8 @@ public class ObservationActivity extends ActionBarActivity {
 	public static final int PULSEOX_VALUE_REQUEST = 1;
 	
 	Integer s1 = 0, s2 = 0 , s3 = 0;
+
+
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +55,7 @@ public class ObservationActivity extends ActionBarActivity {
 		sensor1Txt = (TextView) findViewById(R.id.obs_pulseReading);
 		sensor2Txt = (TextView) findViewById(R.id.obs_oxygenReading);
 		sensor3Txt = (TextView) findViewById(R.id.obs_series3Reading);
+
 	}
 
 	@Override
@@ -94,14 +97,22 @@ public class ObservationActivity extends ActionBarActivity {
 
 		Intent intent = getIntent();
 //		Integer patient_id = intent.getIntExtra(Patient.PATIENT_ID,0);
-		String[] vals = intent.getStringArrayExtra("PATIENT");
+//		String[] vals = intent.getStringArrayExtra(Constants.PATIENT);
 		String allergies = etAllergies.getText().toString();
 		String temperature = etTemperature.getText().toString();
 		
 		DatabaseHelper db = new DatabaseHelper(this);
-		
-		
-		int patient_id = (int) db.createPatient(new Patient(vals[0], vals[1], vals[2], vals[3]));
+
+		boolean new_patient = intent.getBooleanExtra(Constants.NEW_PATIENT, true);
+		Patient patient = (Patient) intent.getSerializableExtra(Constants.PATIENT);
+
+		int patient_id;
+		if(new_patient) {
+			patient_id = (int) db.createPatient(patient);
+		}
+		else{
+			patient_id = patient.getId();
+		}
 		
 		int obs_id = (int)db.addPatientObservation(new PatientObservation(patient_id, temperature, allergies));
 
@@ -121,10 +132,10 @@ public class ObservationActivity extends ActionBarActivity {
 		//Create Json to send to hospitals
 		JSONObject obj = new JSONObject();
 		try {
-			obj.put("uuid", vals[0]);
-			obj.put("name", vals[1]);
-			obj.put("dob", vals[3]);
-			obj.put("gender", vals[2]);
+			obj.put("uuid", patient.getUUID());
+			obj.put("name", patient.getName());
+			obj.put("dob", patient.getDob());
+			obj.put("gender", patient.getGender());
 
 			JSONObject obs = new JSONObject();
 

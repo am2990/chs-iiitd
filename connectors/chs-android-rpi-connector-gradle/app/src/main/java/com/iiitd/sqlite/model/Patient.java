@@ -2,7 +2,9 @@ package com.iiitd.sqlite.model;
 
 import android.provider.BaseColumns;
 
-public final class Patient implements BaseColumns {
+import java.io.Serializable;
+
+public final class Patient implements BaseColumns , Serializable {
 
 	int id;
 	String uuid;

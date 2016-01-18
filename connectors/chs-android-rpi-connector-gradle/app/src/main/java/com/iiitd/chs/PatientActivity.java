@@ -67,9 +67,10 @@ public class PatientActivity extends ActionBarActivity {
 	public void addObservation(View v){
 
 		Intent intent=new Intent(this, ObservationActivity.class);
-		String[] vals = {patient.getUUID(), patient.getName(),  patient.getDob(), patient.getGender()};
-
-		intent.putExtra("PATIENT", vals);
+		String[] vals = {patient.getUUID(), patient.getName(), patient.getGender(), patient.getDob()};
+		intent.putExtra(Constants.PATIENT, patient);
+		intent.putExtra(Constants.NEW_PATIENT, false);
+//		intent.putExtra("PATIENT", vals);
 		startActivity(intent);
 	}
 	@Override

@@ -9,5 +9,8 @@ public final class Constants {
     public static final String AMQP_SUBSCRIBED_MESSAGE = "com.iiitd.chs.amqpIntent.SUBSCRIBE";
     
     public static final String AMQP_PUBLISH_MESSAGE = "com.iiitd.chs.amqpIntent.PUBLISH";
+
+    public static final String PATIENT = "intent.patient";
+    public static final String NEW_PATIENT = "intent.new_patient";
     
 }
