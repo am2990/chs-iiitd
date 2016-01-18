@@ -95,8 +95,6 @@ public class Sensor implements Serializable{
 		return this.obs_id;
 	}
 
-	//TODO add getter and setter for obs_id
-
 	public String toString(){
 		return this.getSensorName();
 	}

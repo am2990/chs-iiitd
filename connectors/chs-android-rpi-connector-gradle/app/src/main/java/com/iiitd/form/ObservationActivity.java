@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
+import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -52,6 +53,7 @@ public class ObservationActivity extends ActionBarActivity {
 		mTitle = getTitle();
 		etAllergies = (EditText) findViewById(R.id.Allergies);
 		etTemperature = (EditText) findViewById(R.id.Temperature);
+		etTemperature.setRawInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
 		sensor1Txt = (TextView) findViewById(R.id.obs_pulseReading);
 		sensor2Txt = (TextView) findViewById(R.id.obs_oxygenReading);
 		sensor3Txt = (TextView) findViewById(R.id.obs_series3Reading);
@@ -129,6 +131,7 @@ public class ObservationActivity extends ActionBarActivity {
 		s.setObsId(obs_id);
 		s.setPatientId(patient_id);
 		int sensor_id = (int) db.addSensor(s);
+		Log.d(Tag, "Saved SensorObs with id "+ sensor_id);
 		//Create Json to send to hospitals
 		JSONObject obj = new JSONObject();
 		try {

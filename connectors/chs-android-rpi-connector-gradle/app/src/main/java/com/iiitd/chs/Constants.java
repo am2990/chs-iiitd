@@ -12,5 +12,6 @@ public final class Constants {
 
     public static final String PATIENT = "intent.patient";
     public static final String NEW_PATIENT = "intent.new_patient";
+    public static final String PATIENT_OBS = "intent.patient_obs";
     
 }

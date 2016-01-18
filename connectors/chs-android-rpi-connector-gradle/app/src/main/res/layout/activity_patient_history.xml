@@ -1,47 +1,81 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<TableLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
+    >
+
+    <TableRow>
+        <TextView
+            android:id="@+id/pt_Name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="NAME:"
+            android:padding="15dip"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+
+        <TextView
+            android:id="@+id/pt_name1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:text="pname"
+            android:textAppearance="?android:attr/textAppearanceLarge" />
+    </TableRow>
+    <TableRow>
+        <TextView
+            android:id="@+id/pt_Nuuid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="UUID"
+            android:padding="15dip"
+            />
+        <TextView
+            android:id="@+id/pt_uuid"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </TableRow>
+    <TableRow>
+        <TextView
+            android:id="@+id/pt_Nobs_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="PATIENT ID"
+            android:padding="15dip"
+            />
+        <TextView
+            android:id="@+id/pt_obs_id"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </TableRow>
 
     <TextView
-        android:id="@+id/pt_name1"
+        android:id="@+id/pt_temp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:layout_marginTop="10dp"
+        android:text="@string/hello_world" />
 
     <TextView
-    android:id="@+id/pt_uuid"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="50dp" />
-
+        android:id="@+id/pt_allergies"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/hello_world" />
     <TextView
-    android:id="@+id/pt_dob"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="70dp" />
-
+        android:id="@+id/pt_sensordata"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/hello_world" />
     <TextView
-    android:id="@+id/pt_gender"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="90dp"
-    android:text="@string/hello_world" />
+        android:id="@+id/pt_notifications"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:text="@string/no_notification" />
 
-    <TextView
-    android:id="@+id/pt_temperature"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="110dp"
-    android:text="@string/hello_world" />
-    <TextView
-    android:id="@+id/pt_allergies"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:layout_marginTop="130dp"
-    android:text="@string/hello_world" />
-
-</LinearLayout>
+</TableLayout>

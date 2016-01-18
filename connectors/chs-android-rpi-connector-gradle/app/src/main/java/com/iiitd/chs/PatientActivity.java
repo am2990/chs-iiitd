@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,10 +26,11 @@ import java.util.List;
 @SuppressWarnings("deprecation")
 public class PatientActivity extends ActionBarActivity {
 
-	private TextView tvName;
+	public static final String TAG = "PatientActivity";
+	private TextView tvName, tvGender, tvDob;
 	private static List<PatientObservation> obs;
 	private static Context mContext;
-	private static String[] obs_list;
+	private static ArrayAdapter<PatientObservation> obs_list;
 	Patient patient;
 
 	@Override
@@ -42,11 +44,11 @@ public class PatientActivity extends ActionBarActivity {
 		DatabaseHelper db = new DatabaseHelper(this);
 		patient = db.getPatientById(patient_id);
 		obs = db.getObsById(patient_id);
-		obs_list = new String[obs.size()];
-		int j = 0;
-		for( PatientObservation p : obs) {
-			obs_list[j++] = p.toString();
-		}
+//		obs_list = new ArrayAdapter<PatientObservation>(thi);
+//		int j = 0;
+//		for( PatientObservation p : obs) {
+//			obs_list[j++] = p.toString();
+//		}
 		db.closeDb();
 
 
@@ -56,10 +58,13 @@ public class PatientActivity extends ActionBarActivity {
 		transaction.commit();
 
 		tvName = (TextView)findViewById(R.id.pt_name);
+		tvGender = (TextView)findViewById(R.id.pt_gender);
+		tvDob = (TextView)findViewById(R.id.pt_dob);
 
 
 		tvName.setText(patient.getName());
-//		//TODO dynamically display list of observations with date
+		tvGender.setText(patient.getGender());
+		tvDob.setText(patient.getDob());
 
 		mContext = this;
 	}
@@ -67,7 +72,7 @@ public class PatientActivity extends ActionBarActivity {
 	public void addObservation(View v){
 
 		Intent intent=new Intent(this, ObservationActivity.class);
-		String[] vals = {patient.getUUID(), patient.getName(), patient.getGender(), patient.getDob()};
+//		String[] vals = {patient.getUUID(), patient.getName(), patient.getGender(), patient.getDob()};
 		intent.putExtra(Constants.PATIENT, patient);
 		intent.putExtra(Constants.NEW_PATIENT, false);
 //		intent.putExtra("PATIENT", vals);
@@ -95,12 +100,15 @@ public class PatientActivity extends ActionBarActivity {
 	public static class SimpleListFragment extends ListFragment
 	{
 
-		String[] numbers_text = new String[] { "No Recorded Observations" };
+		String[] noObs_text = new String[] { "No Recorded Observations" };
 
 		@Override
 		public void onListItemClick(ListView l, View v, int position, long id) {
 
 			Intent i = new Intent(mContext, PatientHistory.class);
+			final PatientObservation item = (PatientObservation) l.getItemAtPosition(position);
+			Log.d(TAG, item.getAllergies());
+			i.putExtra(Constants.PATIENT_OBS, item);
 			startActivity(i);
 		}
 
@@ -111,16 +119,16 @@ public class PatientActivity extends ActionBarActivity {
 
 			//TODO create the fragment class and do it in the more elegant way
 			//Check if the patient has observations recorded else display default list
-			if(obs_list ==  null){
+			if(obs ==  null){
 			ArrayAdapter<String> adapter = new ArrayAdapter<String>(
 					inflater.getContext(), android.R.layout.simple_list_item_1,
-					numbers_text);
+					noObs_text);
 				setListAdapter(adapter);
 			}
 			else{
-				ArrayAdapter<String> adapter = new ArrayAdapter<String>(
+				ArrayAdapter<PatientObservation> adapter = new ArrayAdapter<PatientObservation>(
 						inflater.getContext(), android.R.layout.simple_list_item_1,
-						obs_list);
+						obs);
 				setListAdapter(adapter);
 			}
 

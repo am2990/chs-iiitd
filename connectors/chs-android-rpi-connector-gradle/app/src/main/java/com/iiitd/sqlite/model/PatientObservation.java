@@ -1,6 +1,8 @@
 package com.iiitd.sqlite.model;
 
-public final class PatientObservation {
+import java.io.Serializable;
+
+public final class PatientObservation implements Serializable{
 	
 	int id;
 	int patient_id;
