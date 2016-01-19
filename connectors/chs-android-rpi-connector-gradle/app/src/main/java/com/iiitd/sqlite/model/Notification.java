@@ -7,7 +7,7 @@ public class Notification {
 
     int _id;
     int obs_id;
-    String notification = "No Notifications from doctor yet !!!";
+    String notification ;
     String created_at;
 
     public Notification(){

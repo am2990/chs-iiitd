@@ -142,6 +142,7 @@ public class ObservationActivity extends ActionBarActivity {
 
 			JSONObject obs = new JSONObject();
 
+			obs.put("obs_id", obs_id);
 			obs.put("temperature", Double.parseDouble(temperature));
 			obs.put("allergies", allergies);
 			obs.put("sensorname", sensor);

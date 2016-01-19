@@ -55,8 +55,7 @@ public class AMQPService extends IntentService{
 		subscribeQueue = new LinkedBlockingDeque<String>();
 		
 		isRunning = false;
-		//TODO from settings
-		
+
 		SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(this);
 		String username = sharedPref.getString(SettingsActivity.SETTINGS_USERNAME, "");
 		String password = sharedPref.getString(SettingsActivity.SETTINGS_PASSWORD, "");

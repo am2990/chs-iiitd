@@ -20,6 +20,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
 
+import com.iiitd.chs.Constants;
 import com.iiitd.chs.MainActivity;
 import com.iiitd.navigationexample.R;
 import com.iiitd.sqlite.helper.DatabaseHelper;
@@ -61,7 +62,7 @@ public class RegistrationActivity extends ActionBarActivity {
 		
 		uuidTextView = (TextView) findViewById(R.id.textViewUUID);
 	    UUID id = UUID.randomUUID();
-	    uuidTextView.setText("UUID: " +id.toString());
+	    uuidTextView.setText(id.toString());
 
 	}
 
@@ -102,10 +103,6 @@ public class RegistrationActivity extends ActionBarActivity {
 		
 		//TODO Validate Form
 
-		
-		
-		//TODO Get values from From
-		
 		String gender = "";
 		if(rg.getCheckedRadioButtonId()!=-1){
 		    int id= rg.getCheckedRadioButtonId();
@@ -118,10 +115,7 @@ public class RegistrationActivity extends ActionBarActivity {
 		String patientName = etName.getText().toString();
 		String patientDob = etDob.getText().toString();
 		String uuid = uuidTextView.getText().toString();
-		//TODO Save Form into SQLite Database
-		
-		
-		
+
 //		DatabaseHelper db = new DatabaseHelper(this);
 //		int patient_id = (int) db.createPatient(new Patient(uuid, patientName, patientDob, gender));
 
@@ -130,9 +124,11 @@ public class RegistrationActivity extends ActionBarActivity {
 //		intent.putExtra(Patient.PATIENT_ID, patient_id);
 		
 		//TODO get rid of this code
-		String[] vals = {uuid, patientName,  patientDob, gender};
-				
-		intent.putExtra("PATIENT", vals);
+		String[] vals = {uuid, patientName, gender, patientDob};
+		Patient patient = new Patient(uuid, patientName, gender, patientDob);
+
+
+		intent.putExtra(Constants.PATIENT, patient);
 		startActivity(intent);
 
 	}

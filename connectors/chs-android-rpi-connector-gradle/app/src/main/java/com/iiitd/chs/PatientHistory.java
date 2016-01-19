@@ -57,8 +57,9 @@ public class PatientHistory extends ActionBarActivity {
 		tvTemperature.setText(patientObservation.getTemperature());
 		tvAllergies.setText(patientObservation.getAllergies());
 		tvSensorReading.setText(readings);
-		tvNotification.setText(notification.getNotification());
 
+		String notificationText = (notification == null ? "No Notification from doctor yet !!" : notification.getNotification());
+		tvNotification.setText(notificationText);
 	}
 
 	@Override
