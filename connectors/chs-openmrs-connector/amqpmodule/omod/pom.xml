@@ -4,14 +4,14 @@
 
 	<parent>
 		<groupId>org.openmrs.module</groupId>
-		<artifactId>amqpmodule</artifactId>
+		<artifactId>testmodule</artifactId>
 		<version>1.0-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>amqpmodule-omod</artifactId>
+	<artifactId>testmodule-omod</artifactId>
 	<packaging>jar</packaging>
-	<name>Amqp Module Module OMOD</name>
-	<description>OMOD project for AmqpModule</description>
+	<name>Test Module Module OMOD</name>
+	<description>OMOD project for TestModule</description>
 
 	<dependencies>
 
@@ -22,7 +22,19 @@
 			<artifactId>library-name</artifactId> 
 		</dependency> 
 		-->
+		<!-- <dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20141113</version>
+		</dependency> -->
 		
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20140107</version>
+		</dependency>
+		
+			
 		<!-- Begin OpenMRS modules -->
 		
 		<dependency>

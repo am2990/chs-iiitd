@@ -17,7 +17,7 @@
 
 	
 	<!-- Module Activator -->
-	<activator>${project.parent.groupId}.${project.parent.artifactId}.AmqpModuleActivator</activator>
+	<activator>${project.parent.groupId}.${project.parent.artifactId}.TestModuleActivator</activator>
 	
 	
 	<!-- Adds link to admin page -->
@@ -29,9 +29,13 @@
 	<!-- Maps hibernate file's, if present -->
 	<mappingFiles>
 				
-		AmqpModule.hbm.xml
+		TestModule.hbm.xml
 				
 	</mappingFiles>
+	
+	<packagesWithMappedClasses>
+		org.openmrs.module.testmodule
+	</packagesWithMappedClasses>
 
 	<!-- Internationalization -->
 	<!-- All message codes should start with ${project.parent.artifactId}. -->

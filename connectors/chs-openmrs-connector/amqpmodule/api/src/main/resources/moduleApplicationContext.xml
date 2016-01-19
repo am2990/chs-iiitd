@@ -20,21 +20,20 @@
 	<!-- Add here beans related to the API context -->
 
 	
-	<!-- Services accessible via Context.getService() --> 	
-	
-	<bean parent="serviceContext">
+	<!-- Services accessible via Context.getService() -->
+     <bean parent="serviceContext">
 		<property name="moduleService">
 			<list>
-				<value>org.openmrs.module.amqpmodule.api.AmqpService</value>
+				<value>${project.parent.groupId}.${project.parent.artifactId}.api.TestModuleService</value>
 				<bean
 					class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
 					<property name="transactionManager">
 						<ref bean="transactionManager" />
 					</property>
 					<property name="target">
-						<bean class="org.openmrs.module.amqpmodule.api.impl.AmqpServiceImpl">
+						<bean class="${project.parent.groupId}.${project.parent.artifactId}.api.impl.TestModuleServiceImpl">
 							<property name="dao">
-								<bean class="org.openmrs.module.amqpmodule.api.db.hibernate.HibernateAmqpServiceDAO">
+								<bean class="${project.parent.groupId}.${project.parent.artifactId}.api.db.hibernate.HibernateTestModuleDAO">
 									<property name="sessionFactory">
 										<ref bean="sessionFactory" />
 									</property>
@@ -51,6 +50,31 @@
 				</bean>
 			</list>
 		</property>
-	</bean>
+	 </bean> 
+	<!-- <bean id="testService"
+            class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+        <property name="transactionManager">
+            <ref bean="transactionManager" />
+        </property>
+        <property name="target">
+            <bean class="${project.parent.groupId}.${project.parent.artifactId}.api.impl.TestModuleServiceImpl"/>
+        </property>
+        <property name="preInterceptors">
+            <ref bean="serviceInterceptors" />
+        </property>
+        <property name="transactionAttributeSource">
+            <ref bean="transactionAttributeSource" />
+        </property>
+    </bean>
+	
+	Services accessible via Context.getService()
+	<bean parent="serviceContext">
+		<property name="moduleService">
+			<list>
+				<value>${project.parent.groupId}.${project.parent.artifactId}.api.TestModuleService</value>
+                <ref local="testService"/>
+			</list>
+		</property>
+	</bean> -->
 	
 </beans>

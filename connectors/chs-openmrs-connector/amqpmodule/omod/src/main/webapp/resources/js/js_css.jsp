@@ -19,21 +19,19 @@
 
 <script type="text/javascript">
 	$ = jQuery.noConflict();
-	
-
-	
 </script>
 
 
-<!--  <link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/jquery/css/jquery.mobile-1.4.5.css" />-->
-<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/common-utils.js" ></script>
-<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/paging.js" ></script>
-<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/page-utils.js" ></script>
-<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/jquery/jquery.metadata.min.js" ></script>
-<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/jquery/jquery.monthpicker.js" ></script>
-<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/scripts/jquery/jquery.validate.min.js" ></script>
-<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/jquery-1.11.3.min.js" ></script>
-<%-- <script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/amqpmodule/jquery.mobile-1.4.5.min.js" ></script> --%>
+<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/testmodule/css/bootstrap.min.css" />
+<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/moduleResources/testmodule/css/jquery-ui.css" />
+<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/testmodule/scripts/common-utils.js" ></script>
+<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/testmodule/scripts/paging.js" ></script>
+<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/testmodule/scripts/page-utils.js" ></script>
+<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/testmodule/scripts/jquery/jquery.metadata.min.js" ></script>
+<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/testmodule/scripts/jquery/jquery.monthpicker.js" ></script>
+<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/testmodule/scripts/jquery/jquery.validate.min.js" ></script>
+<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/testmodule/scripts/jquery/jquery-1.11.3.min.js" ></script>
+<script type="text/javascript"  src="${pageContext.request.contextPath}/moduleResources/testmodule/scripts/jquery/bootstrap.min.js" ></script>
 
 
 

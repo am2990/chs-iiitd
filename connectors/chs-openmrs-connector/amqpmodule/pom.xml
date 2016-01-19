@@ -3,12 +3,12 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>org.openmrs.module</groupId>
-	<artifactId>amqpmodule</artifactId>
+	<artifactId>testmodule</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>pom</packaging>
-	<name>Amqp Module Module</name>
-	<description>AMQP Integration</description>
-	<url>https://wiki.openmrs.org/display/docs/Amqp+Module+Module+Module</url>
+	<name>Test Module Module</name>
+	<description>Helps to start writing OpenMRS modules</description>
+	<url>https://wiki.openmrs.org/display/docs/Test+Module+Module+Module</url>
 	
 	<developers>
 		<developer>
@@ -22,9 +22,9 @@
 	</organization>
 
 	<scm>
-		<connection>scm:svn:https://svn.openmrs.org/openmrs-modules/amqpmodule/trunk/</connection>
-		<developerConnection>scm:svn:https://svn.openmrs.org/openmrs-modules/amqpmodule/trunk/</developerConnection>
-		<url>https://svn.openmrs.org/openmrs-modules/amqpmodule/trunk/</url>
+		<connection>scm:svn:https://svn.openmrs.org/openmrs-modules/testmodule/trunk/</connection>
+		<developerConnection>scm:svn:https://svn.openmrs.org/openmrs-modules/testmodule/trunk/</developerConnection>
+		<url>https://svn.openmrs.org/openmrs-modules/testmodule/trunk/</url>
 	</scm>
 
 	<modules>
@@ -33,8 +33,10 @@
 	</modules>
 	
 	<properties>
-		<openMRSVersion>1.8.4</openMRSVersion>
+		<openMRSVersion>1.9.8</openMRSVersion>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<spring.framework.version>3.0.5.RELEASE</spring.framework.version>
+		<spring.amqp.version>1.0.0.RELEASE</spring.amqp.version>
 	</properties>
 
 	<dependencyManagement>
@@ -51,8 +53,6 @@
 			</dependency>
 			-->
 			
-			
-
 			<!-- Begin OpenMRS core -->
 			
 			<dependency>

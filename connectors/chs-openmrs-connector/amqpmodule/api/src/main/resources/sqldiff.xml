@@ -13,29 +13,46 @@
 			   calling this script
 	</help>
 
-
+<!-- 
 	<diff>
 		<version>1.0-SNAPSHOT</version>
+		<author>apurv</author>
+		<date></date>
+		<description></description>
+		<sql></sql>
+	</diff>
+ -->
+ 	<diff>
+		<version>1.1-SNAPSHOT</version>
 		<author>apurv</author>
 		<date>25-07-2015</date>
-		<description>Create Employee Table</description>
-		<sql>CREATE TABLE IF NOT EXISTS EMPLOYEE (
-		   id INT NOT NULL auto_increment,
-		   uuid  VARCHAR(32) default NULL,
-		   name  VARCHAR(20) default NULL,
-		   obs   VARCHAR(255)  default NULL,
-		   PRIMARY KEY (id));
+		<description>Create Test Module Table</description>
+		<sql>CREATE TABLE IF NOT EXISTS test_module_patients (
+		   test_id INT NOT NULL auto_increment,
+		   test_uuid  VARCHAR(255) default NULL,
+		   test_name  VARCHAR(20) default NULL,
+		   test_gender VARCHAR(20) default NULL,
+		   test_dob VARCHAR(20) default NULL,
+		   test_notification   VARCHAR(255)  default NULL,
+           test_observation VARCHAR(255)  default NULL,
+		   test_is_visited INT default NULL,
+		   PRIMARY KEY (test_id));
 		</sql>
 	</diff>
 
-	<diff>
-		<version>1.0-SNAPSHOT</version>
-		<author>apurv</author>
-		<date>11-08-2015</date>
-		<description>Alter Employee Table</description>
-		<sql>ALTER TABLE EMPLOYEE
-			 ADD isvisited INT;
-		</sql>
-	</diff>
-	
+	<!-- <sql>CREATE TABLE IF NOT EXISTS test_module_patients (
+		   test_id INT NOT NULL auto_increment,
+		   test_uuid  VARCHAR(32) default NULL,
+		   test_name  VARCHAR(20) default NULL,
+		   test_notification   VARCHAR(255)  default NULL,
+           test_encounter_id INT default NULL,
+		   test_patient_id INT default NULL,
+           test_visit_id INT default NULL,
+		   test_is_visited INT default NULL,
+		   FOREIGN KEY (test_patient_id) REFERENCES patient(patient_id),
+           FOREIGN KEY (test_encounter_id) REFERENCES encounter(encounter_id),
+           FOREIGN KEY (test_visit_id) REFERENCES visit(visit_id),
+		   PRIMARY KEY (test_id));
+		</sql> -->	
 </sqldiff>
+

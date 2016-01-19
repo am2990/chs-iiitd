@@ -2,17 +2,41 @@
 <%@ include file="/WEB-INF/template/header.jsp"%>
 
 <%@ include file="template/localHeader.jsp"%>
-<%@ include file="./resources/js/js_css.jsp" %>
 
-<p>Hello ${user.systemId}! patient history page</p>
+<%@ include file="resources/js/js_css.jsp" %>
 
-<ul data-role="listview" data-autodividers="true" data-filter="true"
-	data-inset="true"> 
+<script>
+function display(){
 
-	<c:forEach var="patient" items="${patients}">
-		<li><a href="viewPatient.form?patient_id=${patient.id}">${patient.name}</a></li>
-    </c:forEach>
-</ul>
+var a;
+a = document.getElementById('box').value;
+$(list1).find("a:not(:contains(" + a + "))").parent().slideUp();
+$(list1).find("a:contains(" + a + ")").parent().slideDown();
+}
 
 
+</script>
+<div class="tabbale">
+<%@ include file="template/localHeader.jsp"%>
+	
+<p>Hello ${user.systemId}!</br></br><b>Patients history List</b></p>
+
+<div class="container">
+      <div class="panel panel-default">
+	  <input class="form-control" type="text" id="box" placeholder="search.." class="target" onkeyup="display()"/>
+	      <ul class="nav nav-pills nav-stacked" id="list1"> 
+		  <c:forEach var="patient" items="${patients}">
+		      <li class="list-group-item">
+			  <a href="viewPatient.form?patient_id=${patient.id}">
+		      <h4 class="list-group-item-heading"><span id="span1">${patient.givenName}&nbsp;${patient.middleName}&nbsp;${patient.familyName}</span></h4>
+              <p class="list-group-item-text">${patient.birthdate}...${patient.gender}...${patient.age}...</p>
+		      </span>
+		      </a>
+			  </li>
+          </c:forEach>
+          </ul>
+	 
+    </div>
+</div>
+</div>
 <%@ include file="/WEB-INF/template/footer.jsp"%>
