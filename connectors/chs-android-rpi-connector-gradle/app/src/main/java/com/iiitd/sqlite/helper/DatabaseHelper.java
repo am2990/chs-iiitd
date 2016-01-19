@@ -18,6 +18,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.iiitd.networking.NetworkDevice;
 import com.iiitd.networking.Sensor;
+import com.iiitd.sqlite.model.Notification;
 import com.iiitd.sqlite.model.Patient;
 import com.iiitd.sqlite.model.PatientObservation;
 
@@ -369,11 +370,12 @@ public class DatabaseHelper extends SQLiteOpenHelper{
      * @return
      */
 
-    public long addNotification(String notification) {
+    public long addNotification(Notification notification) {
         SQLiteDatabase db = this.getWritableDatabase();
 
         ContentValues values = new ContentValues();
-        values.put(KEY_NOTIFICATION, notification);
+        values.put(KEY_OBSERVATION_ID, notification.getObs_id());
+        values.put(KEY_NOTIFICATION, notification.getNotification());
         values.put(KEY_CREATED_AT, getDateTime());
 
         // insert row
@@ -382,11 +384,42 @@ public class DatabaseHelper extends SQLiteOpenHelper{
         return notf_id;
     }
 
+    public Notification getNotificationByObsId(int obs_id){
+
+        SQLiteDatabase db = this.getReadableDatabase();
+        String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS + " WHERE "
+                + KEY_OBSERVATION_ID + " = " +  obs_id ;
+        Log.d(LOG, selectQuery);
+
+
+        Cursor c = db.rawQuery(selectQuery, null);
+
+        if (c != null)
+            c.moveToFirst();
+        if(c.getCount() == 0)
+            return null;
+
+
+        int id  = c.getInt((c.getColumnIndex(KEY_ID)));
+        int obsId = c.getInt(c.getColumnIndex(KEY_OBSERVATION_ID));
+        String notes = c.getString(c.getColumnIndex(KEY_NOTIFICATION));
+        String created = c.getString(c.getColumnIndex(KEY_CREATED_AT));
+
+        Notification notification = new Notification();
+        notification.set_id(id);
+        notification.setNotification(notes);
+        notification.setObs_id(obsId);
+        notification.setCreated_at(created);
+
+        return notification;
+
+    }
+
     /**
      * getting all patients under single tag
      * */
-    public List<String> getAllNotifications() {
-        List<String> notifications = new ArrayList<String>();
+    public List<Notification> getAllNotifications() {
+        List<Notification> notifications = new ArrayList<>();
 
         String selectQuery = "SELECT  * FROM " + TABLE_NOTIFICATIONS;
 
@@ -400,11 +433,18 @@ public class DatabaseHelper extends SQLiteOpenHelper{
             do {
 
                 int id  = c.getInt((c.getColumnIndex(KEY_ID)));
-                String nots = c.getString(c.getColumnIndex(KEY_NOTIFICATION));
+                int obsId = c.getInt(c.getColumnIndex(KEY_OBSERVATION_ID));
+                String notes = c.getString(c.getColumnIndex(KEY_NOTIFICATION));
                 String created = c.getString(c.getColumnIndex(KEY_CREATED_AT));
 
+                Notification notification = new Notification();
+                notification.set_id(id);
+                notification.setNotification(notes);
+                notification.setObs_id(obsId);
+                notification.setCreated_at(created);
+
                 // adding to patient list
-                notifications.add(id + "." + " " + nots + " " + created);
+                notifications.add(notification);
             } while (c.moveToNext());
         }
 

@@ -15,10 +15,27 @@
         android:layout_alignParentLeft="true"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
+    <TextView
+        android:id="@+id/pt_gender"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/pt_name"
+        android:layout_marginTop="10dp" />
+
+    <TextView
+        android:id="@+id/pt_dob"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@id/pt_gender"
+        android:layout_marginTop="10dp" />
+
+
     <FrameLayout
         android:layout_height="match_parent"
         android:layout_width="wrap_content"
-        android:layout_below="@id/pt_name"
+        android:layout_below="@id/pt_dob"
         android:id="@+id/fragment"/>
 
     <Button

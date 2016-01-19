@@ -41,6 +41,7 @@ import com.iiitd.navigationexample.NavigationDrawerFragment;
 import com.iiitd.navigationexample.R;
 import com.iiitd.networking.Sensor;
 import com.iiitd.sqlite.helper.DatabaseHelper;
+import com.iiitd.sqlite.model.Notification;
 import com.iiitd.sqlite.model.Patient;
 import com.iiitd.sqlite.model.PatientObservation;
 
@@ -70,7 +71,7 @@ public class MainActivity extends ActionBarActivity implements
 	
 	private ListView mDrawerListView;
 
-
+	public static final String TAG = "MainActivity";
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -123,6 +124,7 @@ public class MainActivity extends ActionBarActivity implements
 			break;
 		case 1:
 			fragment = NotificationFragment.newInstance(position + 1);
+			break;
 		case 2:
 			//replace fab fragment to take to the scan activity
 			
@@ -193,7 +195,7 @@ public class MainActivity extends ActionBarActivity implements
 		}
 		
 		if (id == R.id.action_sync) {
-			//TODO use Sync adapter and sync only those patients which have not been synced
+			//TODO only sync patients which need to be synced
 //			AMQPImpl syncer = new AMQPImpl();
 			String msg = "UUID: e4a94948-3e77-4279-8b05-f898a2db94d9:test patient:08/25/15:Male:57:list of allergies:11:11";
 			
@@ -260,11 +262,16 @@ public class MainActivity extends ActionBarActivity implements
 	        Log.d("MainActivity","onReceive called");
 	        //tv.setText("Broadcast received !");
 	        String msg = intent.getStringExtra(Constants.AMQP_SUBSCRIBED_MESSAGE);
-	        
+
+			String[] vals = msg.split(":");
+
 	        DatabaseHelper db = new DatabaseHelper(mContext);
-	        db.addNotification(msg);
+
+			db.addNotification(new Notification(vals[0], vals[1]));
 	        
 	        //TODO push notification to separate function
+
+			//save notification in table
 	        
 	        NotificationCompat.Builder mBuilder =
 	                new NotificationCompat.Builder(mContext)
@@ -396,7 +403,7 @@ public class MainActivity extends ActionBarActivity implements
 		 * fragment.
 		 */
 		private static final String ARG_SECTION_NUMBER = "section_number";
-		private ArrayAdapter<String> adapter;
+		private ArrayAdapter<Notification> adapter;
 		/**
 		 * Returns a new instance of this fragment for the given section number.
 		 */
@@ -420,12 +427,12 @@ public class MainActivity extends ActionBarActivity implements
 			DatabaseHelper db = new DatabaseHelper(mContext);
 			
 			//populated the list with Notifications
-			List<String> data = new ArrayList<String>();
+			List<Notification> data = new ArrayList<>();
 			data = db.getAllNotifications();
 			db.closeDb();
 
 			//ArrayAdapter takes data from a source (fake data) and uses it to populate listView attached to it
-			adapter = new ArrayAdapter<String>(
+			adapter = new ArrayAdapter<Notification>(
 			getActivity(),  //fragment's parent activity (context)
 			R.layout.list_item_desc,    //ID of list item layout
 			R.id.list_item_desc_textview,   //ID of text view to populate
@@ -443,8 +450,8 @@ public class MainActivity extends ActionBarActivity implements
 				@Override
 				public void onItemClick(AdapterView<?> parent, final View view,
 						int position, long id) {
-					final String item = (String) parent.getItemAtPosition(position);
-					
+					final Notification item = (Notification) parent.getItemAtPosition(position);
+					Log.d(TAG, item.getNotification());
 					// show notification in detail
 				}
 

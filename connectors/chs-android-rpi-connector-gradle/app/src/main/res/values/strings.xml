@@ -24,6 +24,7 @@
     <string name="female">Female</string>
     <string name="title_activity_observation">Patient Observations</string>
     <string name="hello_world">Hello world!</string>
+    <string name="no_notification">No Notification!</string>
 
     <!-- Observation Form -->
     <string name="obs_form">Observation Form</string>

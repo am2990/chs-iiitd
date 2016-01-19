@@ -2,12 +2,15 @@ package com.iiitd.chs;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.iiitd.navigationexample.R;
+import com.iiitd.networking.Sensor;
 import com.iiitd.sqlite.helper.DatabaseHelper;
+import com.iiitd.sqlite.model.Notification;
 import com.iiitd.sqlite.model.Patient;
 import com.iiitd.sqlite.model.PatientObservation;
 
@@ -15,7 +18,9 @@ import java.util.List;
 
 public class PatientHistory extends ActionBarActivity {
 
-	private TextView tvUUID, tvName, tvDob, tvGender, tvTemperature, tvAllergies;
+	public static final String TAG = "PatientHistory";
+
+	private TextView tvUUID, tvName, tvObsID, tvTemperature, tvAllergies, tvSensorReading, tvNotification;
 	Patient patient;
 
 	@Override
@@ -23,22 +28,36 @@ public class PatientHistory extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_patient_history);
 
+		PatientObservation patientObservation = (PatientObservation) getIntent().getSerializableExtra(Constants.PATIENT_OBS);
 		DatabaseHelper db = new DatabaseHelper(this);
-		patient = db.getPatientById(1);
-		List<PatientObservation> obs = db.getObsById(1);
+		patient = db.getPatientById(patientObservation.getPatientId());
+		Sensor sensor = db.getSensorByObsId(patientObservation.getId());
+		Notification notification = db.getNotificationByObsId(patientObservation.getId());
+
+		List<String> readingsList = sensor.getReadings();
+		String readings = "";
+		for(String s: readingsList){
+			readings += s +" , ";
+		}
+		Log.d(TAG, readings);
+//		List<PatientObservation> obs = db.getObsById(1);
 		db.closeDb();
 
 		tvName = (TextView)findViewById(R.id.pt_name1);
 		tvUUID = (TextView)findViewById(R.id.pt_uuid);
-		tvDob = (TextView)findViewById(R.id.pt_dob);
-		tvGender = (TextView)findViewById(R.id.pt_gender);
-		tvTemperature = (TextView)findViewById(R.id.pt_temperature);
+		tvObsID = (TextView)findViewById(R.id.pt_obs_id);
+		tvTemperature = (TextView)findViewById(R.id.pt_temp);
 		tvAllergies = (TextView)findViewById(R.id.pt_allergies);
+		tvSensorReading = (TextView)findViewById(R.id.pt_sensordata);
+		tvNotification = (TextView)findViewById(R.id.pt_notifications);
 
 		tvName.setText(patient.getName());
 		tvUUID.setText(patient.getUUID());
-		tvDob.setText(patient.getDob());
-		tvGender.setText(patient.getGender());
+		tvObsID.setText(" "+ patientObservation.getPatientId());
+		tvTemperature.setText(patientObservation.getTemperature());
+		tvAllergies.setText(patientObservation.getAllergies());
+		tvSensorReading.setText(readings);
+		tvNotification.setText(notification.getNotification());
 
 	}
 
