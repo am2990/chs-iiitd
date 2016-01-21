@@ -255,12 +255,47 @@ public class RegistrationController
 	
 	 @RequestMapping(value = "/DashboardUser")
 	 public String forUser(ModelMap model)
-	 {
+	 {        
+		      
 		 return "DashboardUser";
 	 }
 	
+	  @RequestMapping(value = "DashboardUser", method = RequestMethod.GET)
+			    public String forUser1( ModelMap map)
+			    {
+			    	List<Topic> tl =  this.topicService.getAllTopics();
+			    	System.out.println("Topic Size"+tl.size());
+			    	map.addAttribute("topicList", this.topicService.getAllTopics());
+			        return "DashboardUser";
+			    }
 	
 	
+			    
+			    
+//	 @RequestMapping(value = "/DashboardUser", method = RequestMethod.POST)
+//	    public String loginUser1(HttpServletRequest request, 
+//	 @RequestParam(value="username", required=false) String username, 
+//	            @RequestParam(value="pass", required=false) String password,
+//	            ModelMap map)
+//	    {
+//	    	UserEntity User1 = userManager.isUser(username,password);
+//	    	if(User1 != null)
+//		{ 		map.addAttribute("user", User1);
+//	    		System.out.println("Logging in User-" +username);
+//	    		List<Topic> tl =  this.topicService.getAllTopics();
+//	        List<UsersTopic> utl = this.userTopicService.getUserMappings(User1);
+//			for(UsersTopic t : utl) 	
+//			{System.out.println("removing topic:"+t.toString());
+//	        	tl.remove(t.getTopic());
+//	        	}
+//	        	map.addAttribute("topicList", tl);
+//	        	map.addAttribute("subscribed", utl);
+//	    		return "DashboardUser";
+//	    	}
+//	        return "redirect:/";
+//	    }
+//			    
+			    
   @RequestMapping(value = "/settings",method = RequestMethod.GET)
   public String settings(ModelMap model)
 		  //, @ModelAttribute("settings")Settings settings) {
