@@ -171,7 +171,9 @@ public class RegistrationController
       */  
         
     
+   
     
+     
     
     @RequestMapping("/delete/{userId}")
     public String deleteUser(@PathVariable("userId") Integer employeeId)
@@ -250,6 +252,15 @@ public class RegistrationController
 
 	}
   
+	
+	 @RequestMapping(value = "/DashboardUser")
+	 public String forUser(ModelMap model)
+	 {
+		 return "DashboardUser";
+	 }
+	
+	
+	
   @RequestMapping(value = "/settings",method = RequestMethod.GET)
   public String settings(ModelMap model)
 		  //, @ModelAttribute("settings")Settings settings) {
@@ -300,6 +311,5 @@ public class RegistrationController
   }  
    
 
-  
 
 }

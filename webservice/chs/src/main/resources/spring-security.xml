@@ -22,18 +22,34 @@
 		
 		<!-- access denied page -->
 		<access-denied-handler error-page="/403" />
-		
-		<form-login 
+		<!-- 
+		    <form-login 
 		    login-page="/login" 
 		    default-target-url="/dashboard" 
 			authentication-failure-url="/login?error" 
 			username-parameter="username"
 			password-parameter="password" />
 		<logout logout-success-url="/login?logout"  />
+	    -->
+	
+       						 <form-login login-page="/login"
+           					 authentication-success-handler-ref="myAuthenticationSuccessHandler"
+            				 authentication-failure-url="/login?error=true"
+            				username-parameter="username"
+			password-parameter="password" />
+         					 <logout/>
+	
 		
 	</http>
 	
+
+						    <beans:bean id="myAuthenticationSuccessHandler"
+        					class="com.chs.redirect.MySimpleUrlAuthenticationSuccessHandler" />
+
+
+
 	<!-- Select users and user_roles from database -->
+	<!--   
 	<authentication-manager>
 	  <authentication-provider>
 		<jdbc-user-service data-source-ref="dataSource"
@@ -43,5 +59,17 @@
 		    "select username, role from users_roles1 where username =?  " />
 	  </authentication-provider>
 	</authentication-manager>
-
+ -->
+ 
+ <authentication-manager>
+	  <authentication-provider>
+		<jdbc-user-service data-source-ref="dataSource"
+		  users-by-username-query=
+		    "select username,password, enabled from users where username=?"
+		  authorities-by-username-query=
+		    "select username, role from users where username =?  " />
+	  </authentication-provider>
+	</authentication-manager>
+ 
+ 
 </beans:beans>
