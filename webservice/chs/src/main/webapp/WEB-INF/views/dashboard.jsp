@@ -192,9 +192,21 @@
                     <li >
                         <a href="#">Contact</a>
                     </li>
+                   
+                     <li>
+                    	<a href="/chs/settings">Settings</a>
+                    </li>
+                   
+                     <li>
+                    	<a href="/chs/search2">Search</a>
+                    </li>
+                   
+                                       
                     <li >
                         <a href="/chs">Log Out</a>
                     </li>
+                    
+                  
                 </ul>
                 
             </div>

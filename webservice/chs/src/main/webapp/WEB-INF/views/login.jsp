@@ -1,43 +1,32 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <%@page session="true"%>
+
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@taglib uri="http://www.springframework.org/tags" prefix="spring"%>
+<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+
+
+
 <html>
 <head>
-<title>Sahyog Login Page</title>
-<style>
-.error {
-	padding: 15px;
-	margin-bottom: 20px;
-	border: 1px solid transparent;
-	border-radius: 4px;
-	color: #a94442;
-	background-color: #f2dede;
-	border-color: #ebccd1;
-}
 
-.msg {
-	padding: 15px;
-	margin-bottom: 20px;
-	border: 1px solid transparent;
-	border-radius: 4px;
-	color: #31708f;
-	background-color: #d9edf7;
-	border-color: #bce8f1;
-}
-
-#login-box {
-	width: 300px;
-	padding: 20px;
-	margin: 100px auto;
-	background: #fff;
-	-webkit-border-radius: 2px;
-	-moz-border-radius: 2px;
-	border: 1px solid #000;
-}
-</style>
+  <meta charset="UTF-8">
+  
+<title>CHS - Log-in</title>
+ <link href="<c:url value="/resources/css/jquery-ui.css" />" rel="stylesheet">
+  <!-- <script src="<c:url value="/resources/js/jquery-ui.css" />"></script> -->
+  <link href="<c:url value="/resources/css/style.css" />" rel="stylesheet">
 </head>
 <body onload='document.loginForm.username.focus();'>
 
-	<h1>Spring Security Login Form (Database Authentication)</h1>
+	<h1> Login Form </h1>
+
+ <div class="login-card">
+  	<img src="/chs/resources/images/imgres.png" alt="IIITD Logo" width="165" height="85" border="0">
+    <h1>CHS Log-in</h1><br>
+ 
 
 	<div id="login-box">
 
@@ -68,10 +57,15 @@
 				</tr>
 			</table>
 
-			<input type="hidden" name="${_csrf.parameterName}"
-				value="${_csrf.token}" />
+			<%-- <input type="hidden" name="${_csrf.parameterName}"
+			 	value="${_csrf.token}" />--%>
 
 		</form>
+
+<div class="login-help">
+    <a href="/chs/add">Register</a> &nbsp <a href="#">Forgot Password</a>
+  </div>
+	</div>
 	</div>
 
 </body>

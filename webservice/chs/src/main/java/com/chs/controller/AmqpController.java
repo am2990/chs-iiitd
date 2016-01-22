@@ -80,7 +80,7 @@ public class AmqpController {
 	
 	
 	//TODO: The function will receive the data to be published as a post request. Data will have topicname, values apart from username and password.
-    @RequestMapping(value = "/api/publish", method = RequestMethod.POST)
+    @RequestMapping(value = "/api/publish", method = RequestMethod.GET)
     @ResponseStatus(value = HttpStatus.OK) 
     public void Publish(HttpServletRequest request, 
             @RequestParam(value="username", required=true) String email, 
