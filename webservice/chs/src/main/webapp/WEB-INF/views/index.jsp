@@ -22,6 +22,8 @@
   <div class="login-card">
   	<img src="/chs/resources/images/imgres.png" alt="IIITD Logo" width="165" height="85" border="0">
     <h1>CHS Log-in</h1><br>
+  
+  
   	<form:form method="post" action="/chs/dashboard/">
   		<!--  <div th:if="${param.error}" class="alert alert-error">    
                     Invalid username and password.
@@ -33,6 +35,7 @@
 	    <input type="password" name="pass" placeholder="Password">
 	    <input type="submit" class="login login-submit" value="login">
 	</form:form>
+
 
   <div class="login-help">
     <a href="/chs/add">Register</a> &nbsp <a href="#">Forgot Password</a>
