@@ -17,7 +17,7 @@ public class HelloWorldConfiguration {
 
 	protected static String MARKET_DATA_EXCHANGE_NAME = "chs";
 	
-	protected final String helloWorldQueueName = "hello.world.queue.android";
+	protected final String helloWorldQueueName = "healthworker_to_doctor";
 
 	@Bean
 	public ConnectionFactory rabbitmqConnectionFactory() {

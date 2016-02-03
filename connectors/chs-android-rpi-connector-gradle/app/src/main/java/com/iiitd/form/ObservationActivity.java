@@ -9,9 +9,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.iiitd.amqp.AMQPService;
 import com.iiitd.chs.Constants;
 import com.iiitd.chs.MainActivity;
 import com.iiitd.navigationexample.R;
@@ -29,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("deprecation")
-public class ObservationActivity extends ActionBarActivity {
+public class ObservationActivity extends ActionBarActivity implements AdapterView.OnItemSelectedListener {
 
 	public static final String Tag = "ObservationActivity";
 
@@ -43,6 +47,7 @@ public class ObservationActivity extends ActionBarActivity {
 	
 	Integer s1 = 0, s2 = 0 , s3 = 0;
 
+	String selected_queue = "";
 
 	
 	@Override
@@ -57,6 +62,26 @@ public class ObservationActivity extends ActionBarActivity {
 		sensor1Txt = (TextView) findViewById(R.id.obs_pulseReading);
 		sensor2Txt = (TextView) findViewById(R.id.obs_oxygenReading);
 		sensor3Txt = (TextView) findViewById(R.id.obs_series3Reading);
+
+		ArrayList<String> localTopicList = AMQPService.ptopicList;
+		Spinner spinner = (Spinner) findViewById(R.id.spinner);
+		ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>(this,
+				android.R.layout.simple_spinner_item, localTopicList); //selected item will look like a spinner set from XML
+		spinnerArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+		spinner.setAdapter(spinnerArrayAdapter);
+		spinner.setOnItemSelectedListener(this);
+
+	}
+
+	public void onItemSelected(AdapterView<?> parent, View view,
+							   int pos, long id) {
+		// An item was selected. You can retrieve the selected item using
+		selected_queue = (String) parent.getItemAtPosition(pos);
+		Log.d(Tag, "User Selected Topics-" + selected_queue);
+	}
+
+	@Override
+	public void onNothingSelected(AdapterView<?> parent) {
 
 	}
 
@@ -173,9 +198,11 @@ public class ObservationActivity extends ActionBarActivity {
 //		}
 //		msg += temperature+":"+allergies+":"+s1+":"+s2;
 		msg = obj.toString();
-		Log.d(Tag,"Sending Message" + msg);
+		Log.d(Tag, "Sending Message" + msg);
 		//AMQPImpl.addToPublish(msg);
 		MainActivity.amqpIntent.putExtra(Constants.AMQP_PUBLISH_MESSAGE, msg);
+		MainActivity.amqpIntent.putExtra(Constants.AMQP_PUBLISH_QUEUE, selected_queue);
+
 		startService(MainActivity.amqpIntent);
 		//TODO Validate Form
 		
@@ -213,5 +240,7 @@ public class ObservationActivity extends ActionBarActivity {
 	        }
 	    }
 	}
+
+
 	
 }

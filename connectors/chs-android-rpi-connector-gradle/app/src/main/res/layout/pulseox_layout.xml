@@ -13,10 +13,12 @@
         android:id="@+id/device_spinner"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:paddingBottom="25dp"
         android:prompt="@string/Select_Device"
         android:spinnerMode="dialog" />
     <Spinner
         android:id="@+id/sensor_spinner"
+        android:paddingBottom="25dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

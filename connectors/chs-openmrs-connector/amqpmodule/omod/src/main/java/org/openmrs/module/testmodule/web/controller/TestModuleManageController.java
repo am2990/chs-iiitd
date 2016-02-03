@@ -13,7 +13,11 @@
  */
 package org.openmrs.module.testmodule.web.controller;
 
-import java.util.Date;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BlockingDeque;
 import java.util.concurrent.LinkedBlockingDeque;
@@ -21,7 +25,6 @@ import java.util.concurrent.LinkedBlockingDeque;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import org.openmrs.api.context.Context;
 import org.openmrs.module.testmodule.TestModule;
@@ -42,7 +45,10 @@ public class  TestModuleManageController {
 	
 	protected final Log log = LogFactory.getLog(getClass());
 	
+	private final String USER_AGENT = "Mozilla/5.0";
+	
 	public static BlockingDeque<String> incoming = new LinkedBlockingDeque<String>();
+	private ArrayList<String> stopicList = new ArrayList<String>();
 	
 	
 	@RequestMapping(value = "/module/testmodule/manage", method = RequestMethod.GET)
@@ -97,7 +103,16 @@ public class  TestModuleManageController {
 	public void viewPatient(ModelMap model, @RequestParam( value = "patient_id", required = false ) 
 	Integer patient_id ) 
 	{
-		
+		stopicList = new ArrayList<String>();
+		stopicList.add("doc_hw");
+		try {
+			sendGet();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		for(String s: stopicList){
+			System.out.println("publish topics " + s);
+		}
 		TestModuleService amqpService = Context.getService(TestModuleService.class);		
 		TestModule patient =  amqpService.getPersonById(patient_id);
 		String obsp = patient.getObservation();
@@ -113,12 +128,14 @@ public class  TestModuleManageController {
 		model.addAttribute("temp", temp);
 		model.addAttribute("obs_id", obs_id);
 		model.addAttribute("readings", sens_arr.toString());
+		model.addAttribute("topics", stopicList);
 	}
 	
 	
 	@RequestMapping(value = "/module/testmodule/profile", method = RequestMethod.GET )
 	public @ResponseBody String processAJAXRequest(
-		   @RequestParam("obs") String obs, @RequestParam("oid") Integer obs_id) {
+		   @RequestParam("obs") String obs, @RequestParam("oid") Integer obs_id,
+		   @RequestParam("topic") String topic) {
 		
 		System.out.println("Received Notification" + obs);
 		System.out.println("Received Notification for Obs Id" + obs_id);
@@ -127,7 +144,7 @@ public class  TestModuleManageController {
 
 		String response = obs_id+":"+obs;
 		
-		Publisher p = new Publisher("doc_hw", response);
+		Publisher p = new Publisher(topic, response);
 		p.Publish();
 		
 		return response;
@@ -156,6 +173,42 @@ public class  TestModuleManageController {
 			return response;
 		
 		
+	}
+	
+	private void sendGet() throws Exception {
+
+		String url = "http://192.168.43.123:8080/chs/api/topics/publisher?username=openmrs&pass=openmrs";
+		
+		URL obj = new URL(url);
+		HttpURLConnection con = (HttpURLConnection) obj.openConnection();
+
+		// optional default is GET
+		con.setRequestMethod("GET");
+
+		//add request header
+		con.setRequestProperty("User-Agent", USER_AGENT);
+
+		int responseCode = con.getResponseCode();
+		System.out.println("\nSending 'GET' request to URL : " + url);
+		System.out.println("Response Code : " + responseCode);
+
+		BufferedReader in = new BufferedReader(
+		        new InputStreamReader(con.getInputStream()));
+		String inputLine;
+		StringBuffer response = new StringBuffer();
+
+		while ((inputLine = in.readLine()) != null) {
+			response.append(inputLine);
+		}
+		in.close();
+
+		//print result
+		System.out.println(response.toString());
+		String[] subscribeList = (response.substring(0, response.length()-1)).split(",");
+		for(int i = 0; i < subscribeList.length; i++){
+			stopicList.add(subscribeList[i]);
+		}
+
 	}
 	
 //	public void savePatientToDb(String json){

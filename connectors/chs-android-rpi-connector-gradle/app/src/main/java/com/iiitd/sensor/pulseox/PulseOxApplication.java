@@ -353,8 +353,12 @@ public class PulseOxApplication extends Activity{
 					 Log.d(TAG, "sending request :" + messageStr);
 					 send.send(p);
 
-					 int samplingFrequency = 1000;
-					 Thread.sleep(samplingFrequency);
+					 if(selectedSensor.getSensorName().equalsIgnoreCase("bp")){
+						 Thread.sleep(60000);
+					 }
+					 else{
+						 Thread.sleep(2000);
+					 }
 
 	    		 }
 	    	 }catch(Exception e){
@@ -398,7 +402,13 @@ public class PulseOxApplication extends Activity{
 		    		 byte[] message = new byte[1500];
 		    		 DatagramPacket p = new DatagramPacket(message, message.length);
 		    		 receive = new DatagramSocket(server_port);
-		    		 receive.setSoTimeout(3000);
+					 if(selectedSensor.getSensorName().equalsIgnoreCase("bp")){
+						 receive.setSoTimeout(30000);
+					 }
+					 else{
+						 receive.setSoTimeout(3000);
+					 }
+
 		    		 Log.d(TAG, "Waiting to Receive");
 		    		 receive.receive(p);
 		    		 text = new String(message, 0, p.getLength());
@@ -409,13 +419,19 @@ public class PulseOxApplication extends Activity{
 	    		 }
 	    	 }catch(SocketTimeoutException e){
 	    		 receive.close();
-				 //TODO if socket timeout occurs but getReadings is active this means device is not online
+				 // if socket timeout occurs but getReadings is active this means device is not online
 				 //Promppt the user and close the UDPSend
 				 exception = 1;
 	    	 }
 			catch(Exception e){
-				receive.close();
-				e.printStackTrace();
+
+				if(receive != null)
+					receive.close();
+				else{
+					e.printStackTrace();
+					recreate();
+				}
+
 			}
 
 

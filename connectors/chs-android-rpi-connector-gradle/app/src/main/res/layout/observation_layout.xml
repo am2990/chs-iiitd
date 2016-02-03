@@ -121,11 +121,17 @@
                 android:text="@string/getSensorReading" />
         </TableLayout>
 
+        <Spinner
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/spinner"
+            android:spinnerMode="dropdown" />
+
         <Button
             android:id="@+id/save"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="end"
+            android:layout_gravity="right"
             android:onClick="saveObservation"
             android:text="@string/Save" />
     </LinearLayout>
